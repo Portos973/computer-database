@@ -1,6 +1,6 @@
 /**
  * @author Anderson F.
- * Description: Classe CompanyDAO permet de manipuler la table company 
+ * Description: Class CompanyDAO allows to handle company table  
  * */
 
 package com.excilys.formation.project.dao;
@@ -21,7 +21,7 @@ public class CompanyDAO {
 		this.connectionDAO = connectionDAO;
 	}
 
-	// méthode companies: liste les entreprises
+	// Method companies: list of companies
 	public ArrayList<Company> companies() {
 		ResultSet rs = null;
 		Statement stmt = null;
@@ -44,6 +44,7 @@ public class CompanyDAO {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println("Request error");
 		} finally {
 			try {
 				if (rs != null)
@@ -56,10 +57,11 @@ public class CompanyDAO {
 					cn.close();
 
 			} catch (SQLException e) {
+				System.err.println("Sockets don't close");
 			}
 		}
 
-		System.out.println("\n\n/** Liste des Entreprises **/");
+		System.out.println("\n\n/** List of companies **/");
 		for (int i = 0; i < liste.size(); i++)
 			System.out.println(liste.get(i).getName());
 		

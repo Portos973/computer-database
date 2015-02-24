@@ -13,7 +13,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 
-public class ConnectionDAO {
+public enum ConnectionDAO {
+	INSTANCE;
 	
 	private static final String FICHIER_PROPERTIES = "com/excilys/formation/project/dao/dao.properties";
 	private static final String PROPERTY_URL = "url";
@@ -25,11 +26,11 @@ public class ConnectionDAO {
 	private String username;
 	private String password;
 
-	ConnectionDAO(String url, String username, String password) {
+	private ConnectionDAO() {
 
-		this.url = url;
-		this.username = username;
-		this.password = password;
+		this.url = null;
+		this.username = null;
+		this.password = null;
 
 	}
 
@@ -39,6 +40,7 @@ public class ConnectionDAO {
 	 * 
 	 * données, charger le driver JDBC et retourner une instance de la Factory
 	 */
+
 
 	public static ConnectionDAO getInstance() throws Exception {
 		Properties properties = new Properties();
@@ -71,10 +73,12 @@ public class ConnectionDAO {
             throw new Exception( "Le driver est introuvable dans le classpath.", e );
         }
 
-		ConnectionDAO instance = new ConnectionDAO(url, nomUtilisateur,
-				motDePasse);
+        INSTANCE.url=url;
+        INSTANCE.username=nomUtilisateur;
+		INSTANCE.password=motDePasse;
+		
 
-		return instance;
+		return INSTANCE;
 
 	}
 
