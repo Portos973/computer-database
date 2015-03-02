@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%--     	<%@ taglib uri="/WEB-INF/pagination.tld" prefix="p" %> --%>
+  	<%@ taglib uri="/WEB-INF/pagination.tld" prefix="mylib" %> 
 
 <!DOCTYPE html>
 <html>
@@ -96,7 +96,7 @@
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
 			<ul class="pagination">
-				<li><a href="Dashboard?size=${size}&&limit=${limit}&&offset=${offset}" aria-label="Previous"> <span
+				<li><a href="./Dashboard?index=${index-1}&&limit=${limit}" aria-label="Previous"> <span
 						aria-hidden="true">&laquo;</span>
 				</a></li>
 				
@@ -105,7 +105,7 @@
                 </c:forEach>
 
 				<li><a
-					href="Dashboard?index=${index} }&&limit=${limit}"
+					href="./Dashboard?index=${index+1}&&limit=${limit}"
 					aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 				</a></li>
 			</ul>

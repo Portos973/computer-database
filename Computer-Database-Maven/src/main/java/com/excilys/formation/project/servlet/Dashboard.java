@@ -68,7 +68,7 @@ public class Dashboard extends HttpServlet {
 		String limit = request.getParameter("limit");
 
 		// value of limit and offset calcul
-		int i = 0;
+		int i = 1;
 		int l = 100;
 		if (index != null && limit != null) {
 			i = Integer.parseInt(index);
@@ -84,7 +84,7 @@ public class Dashboard extends HttpServlet {
 		if (index == null && limit == null){
 			list = pg.next(100, 100 * 1 - 100);
 				
-		}else if( index == null &&limit != null)list = pg.next(l, l * 1 - l);
+		}else if( index == null &&limit != null)list = pg.next(l, l * i - l);
 		else list = pg.next(l, l * i - l);
 		
 		request.setAttribute("Computers", list);

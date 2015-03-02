@@ -62,7 +62,7 @@ public class EditComputer extends HttpServlet {
 		request.setAttribute("discontinued", discontinued);
 		request.setAttribute("companyId", companyId);
 		
-		getServletContext().getRequestDispatcher("/views/dashboard.jsp").forward(
+		getServletContext().getRequestDispatcher("/Dashboard").forward(
 				request, response);
 	}
 

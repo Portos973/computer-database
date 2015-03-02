@@ -54,16 +54,7 @@ public class AddComputer extends HttpServlet {
 		request.setAttribute("discontinued", discontinued);
 		request.setAttribute("companyId", companyId);
 
-		try {
-			Controller c = new Controller();
-			c.create(new Long(43), computerName, introduced,
-					discontinued);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.err.println("Computer didn't created");
-		}
-		
+
 		List<Computer> list = null;
 
 		try {
@@ -75,6 +66,18 @@ public class AddComputer extends HttpServlet {
 			e.printStackTrace();
 		}
 
+		try {
+			Controller c = new Controller();
+			System.out.println("ADD COMPUTER !!!!");
+			c.create(new Long(companyId), computerName, introduced,
+					discontinued);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("Computer didn't created");
+		}
+		
+		
 		request.setAttribute("Computers", list);
 		request.setAttribute("size", list.size());
 

@@ -19,13 +19,7 @@
 			<type>int</type>
 		</attribute>
 		<attribute>
-			<name>offset</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>int</type>
-		</attribute>
-		<attribute>
-			<name>size</name>
+			<name>index</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>int</type>

@@ -145,7 +145,8 @@ public class ComputerDAO {
 				ps.setNull(1, 0);
 			ps.setString(2, name);
 			ps.setTimestamp(3, Timestamp.valueOf(date + " 00:00:00"));
-			ps.setTimestamp(4, Timestamp.valueOf(finProd + " 00:00:00"));
+			if (finProd != null) ps.setTimestamp(4, Timestamp.valueOf(finProd + " 00:00:00"));
+			else ps.setTimestamp(4, Timestamp.valueOf(0 + " 00:00:00"));
 			rs = ps.executeUpdate();
 
 		} catch (Exception e) {
@@ -292,14 +293,15 @@ public class ComputerDAO {
 			ps.setInt(1, limit);
 			ps.setInt(2, offset);
 			rs = ps.executeQuery();
+			ComputerDTO cdt = new ComputerDTO();
 
 			while (rs.next()) {
 				Computer c = new Computer();
 				CompanyDAO cc = new CompanyDAO(connectionDAO);
 				c.setCompany(new Company(cc.findById(rs.getLong(1)), rs
 						.getLong(1)));
-				c.setDiscontinued(rs.getString(2));
-				c.setIntroduced(rs.getString(3));
+				c.setDiscontinued(cdt.formatDate(rs.getString(2)));
+				c.setIntroduced(cdt.formatDate(rs.getString(3)));
 				c.setName(rs.getString(4));
 				c.setId(rs.getLong(5));
 
