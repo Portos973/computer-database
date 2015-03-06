@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.formation.project.beans.Computer;
-import com.excilys.formation.project.controller.Controller;
+import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.service.Service;
 import com.excilys.formation.project.service.Pages;
+import com.excilys.formation.project.service.IService;
 
 /**
  * Servlet implementation class Dashboard
@@ -39,31 +41,13 @@ public class Dashboard extends HttpServlet {
 		System.out.println("doGet");
 		String search = request.getParameter("search");
 
-		List<Computer> list = null;
-		List<Computer> listP = null;
-		Controller c;
+		List<ComputerDTO> computersDTO = null;
+		IService service = null;
+		Pages page = null;
 		int size = 0;
-		try {
-			if (search != null) {
 
-				System.out.println(search);
-				c = new Controller();
-				size = c.count();
-				list = c.search(search);
-			} else {
-				System.out.println(search);
-				c = new Controller();
-				size = c.count();
-				// list = c.computers();
-			}
+		int nbPages = (size / 100) + 1;
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		int nbPages = (size / 100) +1;
-		
 		String index = request.getParameter("index");
 		String limit = request.getParameter("limit");
 
@@ -73,24 +57,31 @@ public class Dashboard extends HttpServlet {
 		if (index != null && limit != null) {
 			i = Integer.parseInt(index);
 			l = Integer.parseInt(limit);
-			nbPages = (size / l) +1;
-		}else if(limit != null){
+		} else if (limit != null) {
 			l = Integer.parseInt(limit);
 		}
 
 		System.out.println("index= " + i + " limit= " + l);
 
-		Pages pg = new Pages();
-		if (index == null && limit == null){
-			list = pg.next(100, 100 * 1 - 100);
-				
-		}else if( index == null &&limit != null)list = pg.next(l, l * i - l);
-		else list = pg.next(l, l * i - l);
+		try {
+			System.out.println(search);
+			service = new Service();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Bad instanciation of service");
+		}
+
+		page = new Pages(l, l * i - l, search);
+		computersDTO = service.pages(page);
 		
-		request.setAttribute("Computers", list);
+		size = service.count(search);
+		nbPages = (size / l) + 1;
+
+		request.setAttribute("Computers", computersDTO);
 		request.setAttribute("size", size);
 		request.setAttribute("index", i);
-		request.setAttribute("limit", l);
+		request.setAttribute("limit", page.getLimit());
 		request.setAttribute("nbPages", nbPages);
 
 		getServletContext().getRequestDispatcher("/views/dashboard.jsp")
@@ -105,6 +96,26 @@ public class Dashboard extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		String selection = request.getParameter("selection");
+
+		if (selection != null && selection.length() > 0) {
+			System.out.println(selection);
+			String[] str = selection.split(",");
+			try {
+				IService service = new Service();
+				for (int i = 0; i < str.length; i++) {
+					service.delete(Long.valueOf(str[i]));
+				}
+				System.out.println("Computers deleted");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		getServletContext().getRequestDispatcher("/views/dashboard.jsp")
+				.forward(request, response);
 
 	}
 

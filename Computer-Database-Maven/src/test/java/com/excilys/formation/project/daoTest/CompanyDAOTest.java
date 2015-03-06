@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,11 +12,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.excilys.formation.project.beans.Company;
-import com.excilys.formation.project.dao.CompanyDAO;
+import com.excilys.formation.project.persistence.CompanyDAO;
+import com.excilys.formation.project.persistence.ICompany;
+import com.excilys.formation.project.persistence.ConnectionDAO;
 
 public class CompanyDAOTest {
 
-	private static CompanyDAO mockedCC;
+	private static ICompany mockedCC;
 	private static Company cc = null;
 	private static Company cc1 = null;
 
@@ -25,13 +28,24 @@ public class CompanyDAOTest {
 		cc = new Company("Apple Inc.",new Long(2) );
 		cc1 = new Company("NEC",new Long(3));
 		
-		when(mockedCC.companies()).thenReturn(Arrays.asList(cc, cc1));
+		try {
+			when(mockedCC.companies(ConnectionDAO.INSTANCE.connectionPool.getConnection())).thenReturn(Arrays.asList(cc, cc1));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testCompanies() {
 
-		List<Company> liste = mockedCC.companies();
+		List<Company> liste=null;
+		try {
+			liste = mockedCC.companies(ConnectionDAO.INSTANCE.connectionPool.getConnection());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertEquals(2, liste.size());
 		Company myComp = liste.get(0);
 		assertEquals(new Long(2), myComp.getId());

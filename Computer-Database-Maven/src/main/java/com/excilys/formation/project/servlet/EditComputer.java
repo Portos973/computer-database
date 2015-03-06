@@ -10,8 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
-import com.excilys.formation.project.controller.Controller;
+import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.service.Service;
+import com.excilys.formation.project.service.IService;
 
 /**
  * Servlet implementation class EditComputer
@@ -32,7 +35,33 @@ public class EditComputer extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		String id = request.getParameter("id");
+		String computerName = request.getParameter("computerName");
+		String introduced = request.getParameter("introduced");
+		String discontinued = request.getParameter("discontinued");
+		String companyId = request.getParameter("companyId");
+		
+		
+		
+		List<Company> companies= new ArrayList<Company>();
+		IService c=null;
+		try {
+			c = new Service();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		companies=c.companies();
+		
+		request.setAttribute("id", id);
+		request.setAttribute("companies", companies);
+		request.setAttribute("computerName", computerName);
+		request.setAttribute("introduced", introduced);
+		request.setAttribute("discontinued", discontinued);
+		request.setAttribute("companyId", companyId);
+		
+		getServletContext().getRequestDispatcher("/views/editComputer.jsp").forward(
+				request, response);
 	}
 
 	/**
@@ -42,21 +71,41 @@ public class EditComputer extends HttpServlet {
 		// TODO Auto-generated method stub
 		
 		System.out.println("...");
+		String id=request.getParameter("id");;
 		String computerName = request.getParameter("computerName");
 		String introduced = request.getParameter("introduced");
 		String discontinued = request.getParameter("discontinued");
 		String companyId = request.getParameter("companyId");
-		List<Computer> list= new ArrayList<Computer>();
+		String companyName=null;
+		
+		IService service =null;
+		List<ComputerDTO> computersDTO= new ArrayList<ComputerDTO>();
 
+		ComputerDTO dto= null;
 		try {
-			Controller c = new Controller();
-			list=c.search(computerName);
+			service = new Service();
+			
+			
+			service = new Service();
+			computersDTO = service.computers();
+
+			for (int i = 0; i < computersDTO.size(); i++) {
+				if (computersDTO.get(i).getCompanyId() == new Long(companyId)) {
+					companyName = computersDTO.get(i).getCompanyName();
+				}
+			}
+			
+			dto= new ComputerDTO(new Long(id), computerName, introduced, discontinued, new Long(companyId), companyName);
+			service.update(service.fromDTOToComputer(dto));
+			
+			System.out.println("Succes of update!!");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.err.println("Computer didn't created");
+			System.err.println("Computer didn't update");
 		}
 		
+		request.setAttribute("Computers", computersDTO);
 		request.setAttribute("computerName", computerName);
 		request.setAttribute("introduced", introduced);
 		request.setAttribute("discontinued", discontinued);

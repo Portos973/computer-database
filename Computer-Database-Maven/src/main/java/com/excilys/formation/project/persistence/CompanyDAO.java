@@ -3,7 +3,7 @@
  * Description: Class CompanyDAO allows to handle company table  
  * */
 
-package com.excilys.formation.project.dao;
+package com.excilys.formation.project.persistence;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,14 +16,14 @@ import java.sql.PreparedStatement;
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 
-public class CompanyDAO {
-	private ConnectionDAO connectionDAO;
-
-	public CompanyDAO(ConnectionDAO connectionDAO) {
-		this.connectionDAO = connectionDAO;
-	}
+public enum CompanyDAO implements ICompany {
+	INSTANCE;
 
 	// Method companies: list of companies
+	/* (non-Javadoc)
+	 * @see com.excilys.formation.project.persistence.CompanyInterface#companies()
+	 */
+	@Override
 	public List<Company> companies() {
 		ResultSet rs = null;
 		Statement stmt = null;
@@ -33,9 +33,8 @@ public class CompanyDAO {
 
 		try {
 
-			cn = connectionDAO.getConnection();
-			stmt = cn.createStatement();
-			rs = stmt.executeQuery("SELECT id, name FROM company;");
+			stmt = ConnectionDAO.INSTANCE.getConnection().createStatement();
+			rs = stmt.executeQuery("SELECT id, name FROM company ORDER BY name;");
 			while (rs.next()) {
 				Company c = new Company(rs.getString(2),rs.getLong(1));
 
@@ -53,8 +52,7 @@ public class CompanyDAO {
 				if (stmt != null)
 					stmt.close();
 
-				if (cn != null)
-					cn.close();
+				ConnectionDAO.INSTANCE.closeConnection();
 
 			} catch (SQLException e) {
 				System.err.println("Sockets don't close");
@@ -69,6 +67,10 @@ public class CompanyDAO {
 
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.excilys.formation.project.persistence.CompanyInterface#findById(java.lang.Long)
+	 */
+	@Override
 	public String findById(Long id){
 		ResultSet rs = null;
 		PreparedStatement ps = null;
@@ -78,14 +80,13 @@ public class CompanyDAO {
 		
 		try {
 
-			cn = connectionDAO.getConnection();
+			cn = ConnectionDAO.INSTANCE.connectionPool.getConnection();
 			ps = cn.prepareStatement(query);
 			ps.setLong(1, id);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				name = rs.getString(2);
 
-				//liste.add(c);
 			}
 
 		} catch (Exception e) {
@@ -108,5 +109,28 @@ public class CompanyDAO {
 		}
 		return name;
 	}
+	
+	// delete line of company table
+	/* (non-Javadoc)
+	 * @see com.excilys.formation.project.persistence.CompanyInterface#delete(java.lang.Long, java.sql.Connection)
+	 */
+	@Override
+	public void delete(Long id,Connection connection) {
+		int rs = 0;
+		Connection cn = null;
+		String query = "DELETE FROM company where id= ?";
 
+		try {
+			cn = connection;
+			PreparedStatement ps = cn.prepareStatement(query);
+			ps.setLong(1, id);
+			rs = ps.executeUpdate();
+			System.out.println(" Company deleted ! ");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+	}
+	
 }

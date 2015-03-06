@@ -5,13 +5,15 @@
 
 package com.excilys.formation.project.beans;
 
+import java.util.Date;
+
 public class Computer {
 
 	private String name;
 	private Company company;
 	private Long id;
-	private String discontinued;
-	private String introduced;
+	private Date discontinued;
+	private Date introduced;
 
 	public String getName() {
 		return name;
@@ -37,19 +39,19 @@ public class Computer {
 		this.id = id;
 	}
 
-	public String getDiscontinued() {
+	public Date getDiscontinued() {
 		return discontinued;
 	}
 
-	public void setDiscontinued(String discontinued) {
+	public void setDiscontinued(Date discontinued) {
 		this.discontinued = discontinued;
 	}
 
-	public String getIntroduced() {
+	public Date getIntroduced() {
 		return introduced;
 	}
 
-	public void setIntroduced(String introduced) {
+	public void setIntroduced(Date introduced) {
 		this.introduced = introduced;
 	}
 
