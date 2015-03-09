@@ -133,14 +133,19 @@ public enum ConnectionDAO {
 		if (threadCnx.get() != null)
 			return threadCnx.get();
 		else {
-			threadCnx.set(connectionPool.getConnection());
+			threadCnx.set(ConnectionDAO.INSTANCE.connectionPool.getConnection());
 			return threadCnx.get();
 		}
 	}
-	
+
 	public void closeConnection() throws SQLException {
-		if (threadCnx.get() != null)
-			threadCnx.get().close();
+
+		Connection connection = threadCnx.get();
+
+		connection.commit();
+		connection.close();
+
+		threadCnx.remove();
 	}
 
 }
