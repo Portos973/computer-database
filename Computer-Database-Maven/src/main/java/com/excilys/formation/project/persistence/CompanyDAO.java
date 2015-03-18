@@ -8,129 +8,116 @@ package com.excilys.formation.project.persistence;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.sql.PreparedStatement;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 
-public enum CompanyDAO implements ICompany {
-	INSTANCE;
+@Repository
+public class CompanyDAO implements ICompanyDAO {
+
+	@Autowired
+	ConnectionDAO connectionDAO;
+
+	private DataSource dataSource;
+
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	// Method companies: list of companies
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.CompanyInterface#companies()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.CompanyInterface#companies()
 	 */
 	@Override
 	public List<Company> companies() {
-		ResultSet rs = null;
-		Statement stmt = null;
-		Connection cn = null;
 
-		ArrayList<Company> liste = new ArrayList<Company>();
+		String query = "SELECT id, name FROM company ORDER BY name;";
 
-		try {
+		ArrayList<Company> companies = new ArrayList<Company>();
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
 
-			stmt = ConnectionDAO.INSTANCE.getConnection().createStatement();
-			rs = stmt.executeQuery("SELECT id, name FROM company ORDER BY name;");
-			while (rs.next()) {
-				Company c = new Company(rs.getString(2),rs.getLong(1));
+		for (Map row : rows) {
+			Company c = new Company((String) row.get("name"),
+					(Long) row.get("id"));
 
-				liste.add(c);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Request error");
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (stmt != null)
-					stmt.close();
-
-				ConnectionDAO.INSTANCE.closeConnection();
-
-			} catch (SQLException e) {
-				System.err.println("Sockets don't close");
-			}
+			companies.add(c);
 		}
 
 		System.out.println("\n\n/** List of companies **/");
-		for (int i = 0; i < liste.size(); i++)
-			System.out.println(liste.get(i).getName());
-		
-		return liste;
+		for (int i = 0; i < companies.size(); i++)
+			System.out.println(companies.get(i).getName());
+
+		return companies;
 
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.CompanyInterface#findById(java.lang.Long)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.CompanyInterface#findById(java
+	 * .lang.Long)
 	 */
 	@Override
-	public String findById(Long id){
+	public String findById(Long id) {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		Connection cn = null;
-		String query="SELECT id, name FROM company where id=?;";
-		String name=null;
-		
-		try {
+		String query = "SELECT id, name FROM company where id=?;";
+		String name = null;
 
-			cn = ConnectionDAO.INSTANCE.connectionPool.getConnection();
-			ps = cn.prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				name = rs.getString(2);
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		Company company = null;
+		company = jdbcTemplate.queryForObject(query, new Object[] { id },
+				new CompanyMapper());
 
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Request error");
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-
-				if (cn != null)
-					cn.close();
-
-			} catch (SQLException e) {
-				System.err.println("Sockets don't close");
-			}
-		}
-		return name;
+		return company.getName();
 	}
-	
+
 	// delete line of company table
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.CompanyInterface#delete(java.lang.Long, java.sql.Connection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.CompanyInterface#delete(java
+	 * .lang.Long, java.sql.Connection)
 	 */
 	@Override
-	public void delete(Long id,Connection connection) {
+	public void delete(Long id, Connection connection) {
 		int rs = 0;
 		Connection cn = null;
 		String query = "DELETE FROM company where id= ?";
 
-		try {
-			cn = connection;
-			PreparedStatement ps = cn.prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeUpdate();
-			System.out.println(" Company deleted ! ");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.update(query, new Object[] { id });
+		// try {
+		// cn = connection;
+		// PreparedStatement ps = cn.prepareStatement(query);
+		// ps.setLong(1, id);
+		// rs = ps.executeUpdate();
+		// System.out.println(" Company deleted ! ");
+		//
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		//
+		// }
 	}
-	
+
 }

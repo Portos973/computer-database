@@ -10,23 +10,41 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
-import com.excilys.formation.project.persistence.CompanyDAO;
-import com.excilys.formation.project.persistence.ComputerDAO;
 import com.excilys.formation.project.persistence.ConnectionDAO;
+import com.excilys.formation.project.persistence.ICompanyDAO;
+import com.excilys.formation.project.persistence.IComputerDAO;
 import com.excilys.formation.project.utils.Utils;
+import com.excilys.formation.project.utils.Validate;
 
-public class Service implements IService {
-	private static final Logger logger = LoggerFactory.getLogger(Service.class);
+@Service
+public class ServiceComputer implements IServiceComputer {
+	private static final Logger logger = LoggerFactory.getLogger(ServiceComputer.class);
 
 	List<Company> companies = null;
 	List<Computer> computers = null;
 	Connection cnx = null;
+	
+	@Autowired
+	Validate validate;
+	
+	
+	@Autowired
+	private IComputerDAO computerDAO;
+	
+	@Autowired
+	private ICompanyDAO companyDAO;
+	
+	@Autowired
+	private ConnectionDAO connectionDAO;
 
-	public Service() throws Exception {
+	public ServiceComputer(){
 		companies = new ArrayList<Company>();
 	}
 
@@ -37,8 +55,8 @@ public class Service implements IService {
 	 */
 	@Override
 	public List<ComputerDTO> computers() {
-		List<Computer> computers = null;
-		computers = ComputerDAO.INSTANCE.computers();
+		//List<Computer> computers = null;
+		computers = computerDAO.computers();
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
 
 		for (int i = 0; i < computers.size(); i++)
@@ -47,18 +65,7 @@ public class Service implements IService {
 		return computersDTO;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.excilys.formation.project.service.ServiceInterface#companies()
-	 */
-	@Override
-	public List<Company> companies() {
-		List<Company> companies = null;
 
-		companies = CompanyDAO.INSTANCE.companies();
-		return companies;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -70,7 +77,7 @@ public class Service implements IService {
 	@Override
 	public void details(Long id) {
 
-		ComputerDAO.INSTANCE.details(id);
+		computerDAO.details(id);
 
 	}
 
@@ -84,14 +91,14 @@ public class Service implements IService {
 	@Override
 	public void create(Computer computer) {
 
-		if (!Utils.checkCompanyId(computer.getCompany().getId())) {
+		if (!validate.checkCompanyId(computer.getCompany().getId())) {
 
-			ComputerDAO.INSTANCE.create(null, computer.getName(),
+			computerDAO.create(null, computer.getName(),
 					computer.getIntroduced(), computer.getDiscontinued());
 			System.out.println("\n");
 
 		} else {
-			ComputerDAO.INSTANCE.create(computer.getCompany().getId(),
+			computerDAO.create(computer.getCompany().getId(),
 					computer.getName(), computer.getIntroduced(),
 					computer.getDiscontinued());
 			System.out.println("===========> création faite !!!");
@@ -110,7 +117,7 @@ public class Service implements IService {
 	public void update(Computer comp) {
 		System.out.println(comp.toString());
 		if (comp.getId() > 0) {
-			ComputerDAO.INSTANCE.update(comp.getId(),
+			computerDAO.update(comp.getId(),
 					comp.getCompany().getId(), comp.getName(),
 					comp.getIntroduced(), comp.getDiscontinued());
 		}
@@ -127,12 +134,12 @@ public class Service implements IService {
 	@Override
 	public void delete(Long id) {
 		try {
-			ComputerDAO.INSTANCE.delete(id, ConnectionDAO.INSTANCE.getConnection());
+			computerDAO.delete(id, connectionDAO.getConnection());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			try {
-				ConnectionDAO.INSTANCE.closeConnection();
+				connectionDAO.closeConnection();
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -151,7 +158,7 @@ public class Service implements IService {
 	@Override
 	public List<ComputerDTO> pages(Pages page) {
 
-		computers = ComputerDAO.INSTANCE.pages(page.getLimit(),
+		computers = computerDAO.pages(page.getLimit(),
 				page.getOffset(), page.getSearch());
 
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
@@ -173,7 +180,7 @@ public class Service implements IService {
 	public int count(String search) {
 		int count = 0;
 
-		count = ComputerDAO.INSTANCE.count(search);
+		count = computerDAO.count(search);
 
 		return count;
 	}
@@ -192,14 +199,18 @@ public class Service implements IService {
 		String discontinued = null;
 
 		if (computer.getIntroduced() != null)
-			introduced = computer.getIntroduced().toString();
+			introduced = Utils.formatDate(computer.getIntroduced());
 
 		if (computer.getDiscontinued() != null)
-			discontinued = computer.getDiscontinued().toString();
+			discontinued = Utils.formatDate(computer.getDiscontinued());
 
+		if(computer.getCompany().getId()!=null)
 		return new ComputerDTO(computer.getId(), computer.getName(),
 				introduced, discontinued, computer.getCompany().getId(),
 				computer.getCompany().getName());
+		else return new ComputerDTO(computer.getId(), computer.getName(),
+				introduced, discontinued, 0,
+				"");
 	}
 
 	// Method for convert DTO to Computer object
@@ -217,8 +228,8 @@ public class Service implements IService {
 		Date discontinued = null;
 
 		try {
-			introduced = formatter.parse(dto.getIntroduced());
-			discontinued = formatter.parse(dto.getDiscontinued());
+			if (dto.getIntroduced()!="")introduced = formatter.parse(dto.getIntroduced());
+			if (dto.getDiscontinued()!="")discontinued = formatter.parse(dto.getDiscontinued());
 		} catch (ParseException e) {
 			e.printStackTrace();
 			logger.error("Conversion didn't do ");
@@ -244,26 +255,27 @@ public class Service implements IService {
 	 * java.lang.Long)
 	 */
 	@Override
+	@Transactional
 	public void deleteCompany(Long id) {
 		Connection connection = null;
 
 		try {
 			;
 
-			ConnectionDAO.INSTANCE.getConnection().setAutoCommit(false);
+			connectionDAO.getConnection().setAutoCommit(false);
 
-			List<Long> list = ComputerDAO.INSTANCE.findByCompanyId(id,
-					ConnectionDAO.INSTANCE.getConnection());
+			List<Long> list = computerDAO.findByCompanyId(id,
+					connectionDAO.getConnection());
 
 			for (int i = 0; i < list.size(); i++) {
-				ComputerDAO.INSTANCE.delete(list.get(i),
-						ConnectionDAO.INSTANCE.getConnection());
+				computerDAO.delete(list.get(i),
+						connectionDAO.getConnection());
 			}
 
-			CompanyDAO.INSTANCE.delete(id,
-					ConnectionDAO.INSTANCE.getConnection());
+			companyDAO.delete(id,
+					connectionDAO.getConnection());
 
-			ConnectionDAO.INSTANCE.getConnection().commit();
+			connectionDAO.getConnection().commit();
 
 			System.out.println("Done!");
 
@@ -271,7 +283,7 @@ public class Service implements IService {
 
 			System.out.println(e.getMessage());
 			try {
-				ConnectionDAO.INSTANCE.getConnection().rollback();
+				connectionDAO.getConnection().rollback();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 				logger.error("SQL Error: Rollback didn't do ");
@@ -280,8 +292,8 @@ public class Service implements IService {
 		} finally {
 
 			try {
-				if (ConnectionDAO.INSTANCE.getConnection() != null) {
-					ConnectionDAO.INSTANCE.getConnection().close();
+				if (connectionDAO.getConnection() != null) {
+					connectionDAO.getConnection().close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

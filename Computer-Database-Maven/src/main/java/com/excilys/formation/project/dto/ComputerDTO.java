@@ -5,12 +5,23 @@
 
 package com.excilys.formation.project.dto;
 
+import javax.validation.constraints.Size;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 public class ComputerDTO {
 	
 	private long id;
+	
+	 
+	@Size(min=2, max=30) 
 	private String name;
+	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private String discontinued;
+		
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private String introduced;
 
 	private long companyId;

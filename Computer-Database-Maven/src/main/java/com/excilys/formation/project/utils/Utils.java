@@ -1,17 +1,15 @@
 package com.excilys.formation.project.utils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.excilys.formation.project.beans.Company;
-import com.excilys.formation.project.persistence.CompanyDAO;
-import com.excilys.formation.project.persistence.ICompany;
-import com.excilys.formation.project.service.IService;
+import com.excilys.formation.project.service.ServiceComputer;
+
 
 public class Utils {
+	
+	static ServiceComputer service=new ServiceComputer() ;
 
 	public static String formatDate(Date date) {
 		String str = date.toString();
@@ -27,20 +25,6 @@ public class Utils {
 		return matcher.matches();
 	}
 
-	public static boolean checkCompanyId(Long cid) {
-		boolean bool = false;
-		CompanyDAO comapny = null;
-		IService service = null;
-//		comapny = new CompanyDAO();
 
-		List<Company> companies = new ArrayList<Company>();
-		companies = service.companies();
-
-		for (int i = 0; i < companies.size(); i++)
-			if (companies.get(i).getId() == cid)
-				bool = true;
-
-		return bool;
-	}
 
 }

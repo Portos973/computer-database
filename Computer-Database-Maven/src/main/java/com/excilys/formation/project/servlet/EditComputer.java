@@ -4,25 +4,39 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
-import com.excilys.formation.project.service.Service;
-import com.excilys.formation.project.service.IService;
+import com.excilys.formation.project.service.IServiceCompany;
+import com.excilys.formation.project.service.ServiceComputer;
+import com.excilys.formation.project.service.IServiceComputer;
 
 /**
  * Servlet implementation class EditComputer
  */
-@WebServlet("/EditComputer")
-public class EditComputer extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+@Controller
+@RequestMapping("/editComputer")
+public class EditComputer{
+	@Autowired	
+	private IServiceComputer serviceComputer;
+	
+	@Autowired	
+	private IServiceCompany serviceCompany;
+	       
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -34,7 +48,8 @@ public class EditComputer extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @RequestMapping(method = RequestMethod.GET)
+	protected String doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
 		String computerName = request.getParameter("computerName");
 		String introduced = request.getParameter("introduced");
@@ -44,14 +59,8 @@ public class EditComputer extends HttpServlet {
 		
 		
 		List<Company> companies= new ArrayList<Company>();
-		IService c=null;
-		try {
-			c = new Service();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		companies=c.companies();
+
+		companies=serviceCompany.companies();
 		
 		request.setAttribute("id", id);
 		request.setAttribute("companies", companies);
@@ -60,14 +69,15 @@ public class EditComputer extends HttpServlet {
 		request.setAttribute("discontinued", discontinued);
 		request.setAttribute("companyId", companyId);
 		
-		getServletContext().getRequestDispatcher("/views/editComputer.jsp").forward(
-				request, response);
+		return "editComputer";
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+    @RequestMapping(method = RequestMethod.POST)
+	protected String doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
 		System.out.println("...");
@@ -78,16 +88,13 @@ public class EditComputer extends HttpServlet {
 		String companyId = request.getParameter("companyId");
 		String companyName=null;
 		
-		IService service =null;
+		
 		List<ComputerDTO> computersDTO= new ArrayList<ComputerDTO>();
 
 		ComputerDTO dto= null;
 		try {
-			service = new Service();
-			
-			
-			service = new Service();
-			computersDTO = service.computers();
+
+			computersDTO = serviceComputer.computers();
 
 			for (int i = 0; i < computersDTO.size(); i++) {
 				if (computersDTO.get(i).getCompanyId() == new Long(companyId)) {
@@ -96,7 +103,7 @@ public class EditComputer extends HttpServlet {
 			}
 			
 			dto= new ComputerDTO(new Long(id), computerName, introduced, discontinued, new Long(companyId), companyName);
-			service.update(service.fromDTOToComputer(dto));
+			serviceComputer.update(serviceComputer.fromDTOToComputer(dto));
 			
 			System.out.println("Succes of update!!");
 		} catch (Exception e) {
@@ -111,8 +118,7 @@ public class EditComputer extends HttpServlet {
 		request.setAttribute("discontinued", discontinued);
 		request.setAttribute("companyId", companyId);
 		
-		getServletContext().getRequestDispatcher("/Dashboard").forward(
-				request, response);
+		return "editComputer";
 	}
 
 }

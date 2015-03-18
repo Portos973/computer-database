@@ -1,12 +1,11 @@
 package com.excilys.formation.project.service;
 
-import java.sql.SQLException;
+
 import java.util.List;
 
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.persistence.ComputerDAO;
-import com.excilys.formation.project.persistence.IComputer;
-import com.excilys.formation.project.persistence.ConnectionDAO;
+
 
 public class Pages {
 
@@ -14,6 +13,7 @@ public class Pages {
 	private int index;
 	private int offset;
 	private String search;
+	private ComputerDAO computerDAO;
 
 	public Pages(int limit, int offset, String search) {
 		this.limit = limit;
@@ -23,7 +23,7 @@ public class Pages {
 
 	public List<Computer> next() {
 		List<Computer> computers = null;
-		computers = ComputerDAO.INSTANCE.pages(limit, offset, search);
+		computers = computerDAO.pages(limit, offset, search);
 
 		return computers;
 	}

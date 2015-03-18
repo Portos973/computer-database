@@ -14,125 +14,110 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
 
-public enum ComputerDAO implements IComputer {
-	INSTANCE;
+@Repository
+public class ComputerDAO implements IComputerDAO {
+
+	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private ICompanyDAO companyDAO;
+
+	@Autowired
+	private ConnectionDAO connectionDAO;
+
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	// method computers: list of computer
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#computers()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#computers()
 	 */
-	
+
 	private ComputerDAO() {
 	}
 
 	@Override
 	public List<Computer> computers() {
-		// PreparedStatement preparedStatement = null;
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		Connection cn = null;
 
-		ArrayList<Computer> liste = new ArrayList<Computer>();
+		ArrayList<Computer> computers = new ArrayList<Computer>();
 		String query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name";
 
-		try {
-			ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
 
-			while (rs.next()) {
-				Computer c = new Computer();
+		for (Map row : rows) {
+			Computer c = new Computer();
 
-				c.setCompany(new Company(CompanyDAO.INSTANCE.findById(rs.getLong(1)), rs.getLong(1)));
-				c.setDiscontinued(rs.getDate(2));
-				c.setIntroduced(rs.getDate(3));
-				c.setName(rs.getString(4));
-				c.setId(rs.getLong(5));
+			if (row.get("company_id") != null)
+				c.setCompany(new Company(companyDAO.findById((long) row
+						.get("company_id")), (long) row.get("company_id")));
+			else
+				c.setCompany(new Company(null, null));
+			c.setDiscontinued((Date) row.get("discontinued"));
+			c.setIntroduced((Date) row.get("introduced"));
+			c.setName((String) row.get("name"));
+			c.setId((Long) row.get("id"));
 
-				liste.add(c);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-				
-				ConnectionDAO.INSTANCE.closeConnection();
-
-
-			} catch (SQLException e) {
-			}
+			computers.add(c);
 		}
 
 		System.out.println("/** List of computer **/");
-		for (int i = 0; i < liste.size(); i++)
-			System.out.println(liste.get(i).getName());
+		for (int i = 0; i < computers.size(); i++)
+			System.out.println(computers.get(i).getName());
 
-		return liste;
+		return computers;
 
 	}
 
 	// Details of computer with his ID
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#details(java.lang.Long)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#details(java
+	 * .lang.Long)
 	 */
 	@Override
 	public void details(Long id) {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		Connection cn = null;
+		ArrayList<Computer> computers = new ArrayList<Computer>();
+		String query = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id,  cc.name FROM computer As c, company  As cc where c.id=? and  c.company_id=cc.id";
 
-		ArrayList<Computer> liste = new ArrayList<Computer>();
-		Computer c = new Computer();
-		String query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id, cc.name FROM computer As c, company As cc where c.id=?";
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		Computer computer = jdbcTemplate.queryForObject(query,
+				new Object[] { id }, new ComputerMapper());
 
-		try {
-			ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-
-				c.setCompany(new Company(rs.getString(6), rs.getLong(1)));
-				c.setDiscontinued(rs.getDate(2));
-				c.setIntroduced(rs.getDate(3));
-				c.setName(rs.getString(4));
-				c.setId(rs.getLong(5));
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-				
-				ConnectionDAO.INSTANCE.closeConnection();
-
-			} catch (SQLException e) {
-			}
-		}
-
-		System.out.println(c.toString());
+		System.out.println(computer.toString());
 
 	}
 
 	// Creation and insertion of computer in database
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#create(java.lang.Long, java.lang.String, java.util.Date, java.util.Date)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#create(java
+	 * .lang.Long, java.lang.String, java.util.Date, java.util.Date)
 	 */
 
 	@Override
@@ -142,35 +127,23 @@ public enum ComputerDAO implements IComputer {
 		String query = "INSERT INTO computer set company_id= ?, name=?, introduced=?, discontinued=?";
 		PreparedStatement ps = null;
 
-		try {
-			ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-			if (cid != null)
-				ps.setLong(1, cid);
-			else
-				ps.setNull(1, 0);
-			ps.setString(2, name);
-			ps.setTimestamp(3, new Timestamp(date.getTime()));
-			ps.setTimestamp(4, new Timestamp(date2.getTime()));
-			rs = ps.executeUpdate();
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		if (cid != null)
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				
-				ConnectionDAO.INSTANCE.closeConnection();
-
-			} catch (SQLException e) {
-			}
-		}
+			jdbcTemplate.update(query, new Object[] { cid, name, date, date2 });
+		else
+			jdbcTemplate.update(query, new Object[] { 0, name, date, date2 });
 
 	}
 
 	// mettre à jour les champs d'un ordinateur de la table computer
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#update(java.lang.Long, java.lang.Long, java.lang.String, java.util.Date, java.util.Date)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#update(java
+	 * .lang.Long, java.lang.Long, java.lang.String, java.util.Date,
+	 * java.util.Date)
 	 */
 
 	@Override
@@ -183,164 +156,112 @@ public enum ComputerDAO implements IComputer {
 		if (id != null && cid != null && name != null && date != null
 				&& date2 != null) {
 			query = "UPDATE computer set company_id= ?, name=?, introduced=?, discontinued=? where id=?";
-
-			try {
-				PreparedStatement ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-				ps.setLong(1, cid);
-				ps.setString(2, name);
-				ps.setTimestamp(3, new Timestamp(date.getTime()));
-				ps.setTimestamp(4, new Timestamp(date2.getTime()));
-				ps.setLong(5, id);
-
-				rs = ps.executeUpdate();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				try {
-					ConnectionDAO.INSTANCE.closeConnection();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
+			jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.update(query, new Object[] { id, name, date, date2,
+					cid });
 		}
 
 	}
 
 	// delete line of computer table
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#delete(java.lang.Long, java.sql.Connection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#delete(java
+	 * .lang.Long, java.sql.Connection)
 	 */
 	@Override
 	public void delete(Long id, Connection connection) {
-		int rs = 0;
-		Connection cn = null;
+
 		String query = "DELETE FROM computer where id= ?";
 
-		try {
-			PreparedStatement ps = connection.prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeUpdate();
-			System.out.println(" Computer deleted ! ");
-			ConnectionDAO.INSTANCE.closeConnection();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.update(query, new Object[] { id });
 
 	}
 
-
 	// Select with limit and offset
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#pages(int, int, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#pages(int,
+	 * int, java.lang.String)
 	 */
 
 	@Override
 	public List<Computer> pages(int limit, int offset, String search) {
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		Connection cn = null;
 		String query = null;
 
-		ArrayList<Computer> liste = new ArrayList<Computer>();
+		ArrayList<Computer> computers = new ArrayList<Computer>();
+
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		List<Map<String, Object>> rows = null;
 		if (search == null) {
 			query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name LIMIT ? OFFSET ?;";
+			rows = jdbcTemplate.queryForList(query, new Object[] { limit,
+					offset });
 		} else {
 			query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c WHERE c.name LIKE ? ORDER BY c.name LIMIT ? OFFSET ?";
+			rows = jdbcTemplate.queryForList(query, new Object[] {
+					search + "%", limit, offset });
 		}
 
-		try {
-			ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-			if (search == null) {
-				ps.setInt(1, limit);
-				ps.setInt(2, offset);
-			} else {
-				ps.setString(1, search+"%");
-				ps.setInt(2, limit);
-				ps.setInt(3, offset);
-			}
-			rs = ps.executeQuery();
+		for (Map row : rows) {
+			Computer c = new Computer();
 
-			while (rs.next()) {
-				Computer c = new Computer();
-				c.setCompany(new Company(CompanyDAO.INSTANCE.findById(rs.getLong(1)), rs
-						.getLong(1)));
-				c.setDiscontinued(rs.getDate(2));
-				c.setIntroduced(rs.getDate(3));
-				c.setName(rs.getString(4));
-				c.setId(rs.getLong(5));
+			if (row.get("company_id") != null)
+				c.setCompany(new Company(companyDAO.findById((long) row
+						.get("company_id")), (long) row.get("company_id")));
+			else
+				c.setCompany(new Company(null, null));
+			c.setDiscontinued((Date) row.get("discontinued"));
+			c.setIntroduced((Date) row.get("introduced"));
+			c.setName((String) row.get("name"));
+			c.setId((Long) row.get("id"));
 
-				liste.add(c);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-
-				ConnectionDAO.INSTANCE.closeConnection();
-
-			} catch (SQLException e) {
-			}
+			computers.add(c);
 		}
 
-		return liste;
+		return computers;
 	}
 
 	// number of elements
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#count(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#count(java
+	 * .lang.String)
 	 */
 
 	@Override
 	public int count(String search) {
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		Connection cn = null;
 
 		String query = null;
 
-		if (search == null) {
-			query = "SELECT count(*) FROM computer As c";
-		} else {
+		int count;
+
+		if (search != null) {
 			query = "SELECT count(name) FROM computer As c WHERE name LIKE ? ";
+			count = jdbcTemplate.queryForObject(query, new Object[] { search
+					+ "%" }, Integer.class);
+		} else {
+			query = "SELECT count(*) FROM computer As c";
+			count = jdbcTemplate.queryForObject(query, Integer.class);
 		}
 
-		int count = 0;
-		try {
-			ps = ConnectionDAO.INSTANCE.getConnection().prepareStatement(query);
-			if (search != null) {
-				ps.setString(1, search + "%");
-			}
-			rs = ps.executeQuery();
-			while (rs.next())
-				count = rs.getInt(1);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-			} catch (SQLException e) {
-			}
-
-		}
 		return count;
 	}
 
 	// find computer's id by company's id
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#findByCompanyId(java.lang.Long, java.sql.Connection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.excilys.formation.project.persistence.ComputerInterface#findByCompanyId
+	 * (java.lang.Long, java.sql.Connection)
 	 */
 
 	@Override
@@ -354,7 +275,7 @@ public enum ComputerDAO implements IComputer {
 		try {
 
 			cn = connection;
-			ps = cn.prepareStatement(query);
+			ps = dataSource.getConnection().prepareStatement(query);
 			ps.setLong(1, id);
 			rs = ps.executeQuery();
 
@@ -378,7 +299,7 @@ public enum ComputerDAO implements IComputer {
 			}
 		}
 		return liste;
-	}
 
+	}
 
 }

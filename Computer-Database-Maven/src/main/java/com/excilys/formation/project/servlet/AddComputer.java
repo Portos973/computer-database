@@ -5,27 +5,50 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.persistence.CompanyDAO;
 import com.excilys.formation.project.persistence.ConnectionDAO;
-import com.excilys.formation.project.service.Service;
-import com.excilys.formation.project.service.IService;
+import com.excilys.formation.project.service.IServiceCompany;
+import com.excilys.formation.project.service.ServiceComputer;
+import com.excilys.formation.project.service.IServiceComputer;
 
 /**
  * Servlet implementation class AddComputer
  */
-@WebServlet("/AddComputer")
-public class AddComputer extends HttpServlet {
+
+
+@Controller
+@RequestMapping("/addComputer")
+public class AddComputer {
 	private static final String PARAM_COMPUTER_NAME = "computerName";
 	private static final long serialVersionUID = 1L;
+	
+	@Autowired	
+	private IServiceComputer serviceComputer;
+	
+	@Autowired	
+	private IServiceCompany serviceCompany;
+	
+//	 public void init(ServletConfig config) throws ServletException  {
+//		    super.init(config);
+//		    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+//		    }
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -39,27 +62,23 @@ public class AddComputer extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
+	@RequestMapping(method = RequestMethod.GET)
+	protected String doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		List<Company> companies = new ArrayList<Company>();
-		IService c = null;
-		try {
-			c = new Service();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		companies = c.companies();
+		companies = serviceCompany.companies();
 
 		request.setAttribute("companies", companies);
-		getServletContext().getRequestDispatcher("/views/addComputer.jsp")
-				.forward(request, response);
+		
+		return "addComputer";
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request,
+	@RequestMapping(method = RequestMethod.POST)
+	protected String doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		System.out.println("...");
@@ -70,12 +89,10 @@ public class AddComputer extends HttpServlet {
 		String companyName = null;
 
 		List<ComputerDTO> list = null;
-		IService service = null;
 		ComputerDTO cpt = null;
 
 		try {
-			service = new Service();
-			list = service.computers();
+			list = serviceComputer.computers();
 
 			for (int i = 0; i < list.size(); i++) {
 				if (list.get(i).getCompanyId() == new Long(companyId)) {
@@ -85,8 +102,8 @@ public class AddComputer extends HttpServlet {
 
 			cpt = new ComputerDTO(0, computerName, introduced, discontinued,
 					new Long(companyId), companyName);
-			service.create(service.fromDTOToComputer(cpt));
-			list = service.computers();
+			serviceComputer.create(serviceComputer.fromDTOToComputer(cpt));
+			list = serviceComputer.computers();
 			System.out.println("ADD COMPUTER !!!!");
 
 		} catch (Exception e) {
@@ -103,7 +120,6 @@ public class AddComputer extends HttpServlet {
 		request.setAttribute("Computers", list);
 		request.setAttribute("size", list.size());
 
-		getServletContext().getRequestDispatcher("/views/dashboard.jsp")
-				.forward(request, response);
+		return "dashboard";
 	}
 }

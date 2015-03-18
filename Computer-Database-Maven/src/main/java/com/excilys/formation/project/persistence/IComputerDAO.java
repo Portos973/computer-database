@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.excilys.formation.project.beans.Computer;
 
-public interface IComputer {
+public interface IComputerDAO {
 
 	// method computers: list of computer
 	/* (non-Javadoc)

@@ -3,24 +3,41 @@ package com.excilys.formation.project.servlet;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.formation.project.beans.Computer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.formation.project.dto.ComputerDTO;
-import com.excilys.formation.project.service.Service;
+import com.excilys.formation.project.service.IServiceComputer;
 import com.excilys.formation.project.service.Pages;
-import com.excilys.formation.project.service.IService;
+import com.excilys.formation.project.service.ServiceComputer;
 
 /**
  * Servlet implementation class Dashboard
  */
-@WebServlet("/Dashboard")
-public class Dashboard extends HttpServlet {
+
+@Controller
+@RequestMapping("/dashboard")
+public class Dashboard {
 	private static final long serialVersionUID = 1L;
+	
+	@Autowired	
+	private IServiceComputer service;
+	
+//	 public void init(ServletConfig config) throws ServletException  {
+//		    super.init(config);
+//		    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+//		    }
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -34,7 +51,8 @@ public class Dashboard extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
+	@RequestMapping(method = RequestMethod.GET)
+	protected String doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
@@ -42,7 +60,6 @@ public class Dashboard extends HttpServlet {
 		String search = request.getParameter("search");
 
 		List<ComputerDTO> computersDTO = null;
-		IService service = null;
 		Pages page = null;
 		int size = 0;
 
@@ -65,7 +82,6 @@ public class Dashboard extends HttpServlet {
 
 		try {
 			System.out.println(search);
-			service = new Service();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -84,8 +100,8 @@ public class Dashboard extends HttpServlet {
 		request.setAttribute("limit", page.getLimit());
 		request.setAttribute("nbPages", nbPages);
 
-		getServletContext().getRequestDispatcher("/views/dashboard.jsp")
-				.forward(request, response);
+		return "dashboard";
+		
 
 	}
 
@@ -93,7 +109,8 @@ public class Dashboard extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request,
+	 @RequestMapping(method = RequestMethod.POST)
+	protected String doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String selection = request.getParameter("selection");
@@ -102,7 +119,6 @@ public class Dashboard extends HttpServlet {
 			System.out.println(selection);
 			String[] str = selection.split(",");
 			try {
-				IService service = new Service();
 				for (int i = 0; i < str.length; i++) {
 					service.delete(Long.valueOf(str[i]));
 				}
@@ -114,9 +130,7 @@ public class Dashboard extends HttpServlet {
 
 		}
 
-		getServletContext().getRequestDispatcher("/views/dashboard.jsp")
-				.forward(request, response);
-
+		return "dashboard";
 	}
 
 }

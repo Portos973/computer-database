@@ -1,17 +1,14 @@
 package com.excilys.formation.project.service;
 
-import java.sql.Connection;
+
 import java.util.List;
 
-import com.excilys.formation.project.beans.Company;
 import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
 
-public interface IService {
+public interface IServiceComputer {
 
 	public abstract List<ComputerDTO> computers();
-
-	public abstract List<Company> companies();
 
 	public abstract void details(Long id);
 

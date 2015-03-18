@@ -11,11 +11,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
-public enum ConnectionDAO {
-	INSTANCE;
+@Repository
+public class ConnectionDAO {
+	
+	private DataSource dataSource;
+	
+	
 
 	private static final String FICHIER_PROPERTIES = "com/excilys/formation/project/persistence/dao.properties";
 	private static final String PROPERTY_URL = "url";
@@ -33,6 +42,12 @@ public enum ConnectionDAO {
 	private String username = null;
 	private String password = null;
 
+	
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
 	/*
 	 * 
 	 * Méthode chargée de récupérer les informations de connexion à la base de
@@ -133,7 +148,7 @@ public enum ConnectionDAO {
 		if (threadCnx.get() != null)
 			return threadCnx.get();
 		else {
-			threadCnx.set(ConnectionDAO.INSTANCE.connectionPool.getConnection());
+			threadCnx.set(this.dataSource.getConnection());
 			return threadCnx.get();
 		}
 	}

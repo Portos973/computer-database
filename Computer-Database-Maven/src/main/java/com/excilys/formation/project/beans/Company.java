@@ -5,6 +5,8 @@
 
 package com.excilys.formation.project.beans;
 
+
+
 public class Company {
 	private String name;
 	private Long id;

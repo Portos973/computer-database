@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.excilys.formation.project.beans.Company;
 
-public interface ICompany {
+public interface ICompanyDAO {
 
 	// Method companies: list of companies
 	public abstract List<Company> companies();
@@ -14,6 +14,8 @@ public interface ICompany {
 
 	// delete line of company table
 	public abstract void delete(Long id, Connection connection);
+
+
 
 
 	
