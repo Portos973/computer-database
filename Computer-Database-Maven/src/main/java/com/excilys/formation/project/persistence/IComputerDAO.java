@@ -38,7 +38,7 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#delete(java.lang.Long, java.sql.Connection)
 	 */
-	public abstract void delete(Long id, Connection connection);
+	public abstract void delete(Long id);
 
 	// Method of search
 	/* (non-Javadoc)
@@ -62,7 +62,7 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#findByCompanyId(java.lang.Long, java.sql.Connection)
 	 */
-	public abstract ArrayList<Long> findByCompanyId(Long id,Connection connection);
+	public abstract ArrayList<Long> findByCompanyId(Long id);
 
 
 }

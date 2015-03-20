@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.excilys.formation.project.service.ServiceComputer;
+import com.excilys.formation.project.controller.ServiceComputer;
 
 
 public class Utils {

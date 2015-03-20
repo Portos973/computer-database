@@ -1,4 +1,4 @@
-package com.excilys.formation.project.service;
+package com.excilys.formation.project.controller;
 
 
 import java.util.List;

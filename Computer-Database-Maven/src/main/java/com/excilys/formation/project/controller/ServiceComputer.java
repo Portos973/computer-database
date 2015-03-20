@@ -1,4 +1,4 @@
-package com.excilys.formation.project.service;
+package com.excilys.formation.project.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.models.Company;
 import com.excilys.formation.project.models.Computer;
 import com.excilys.formation.project.persistence.ConnectionDAO;
 import com.excilys.formation.project.persistence.ICompanyDAO;
 import com.excilys.formation.project.persistence.IComputerDAO;
+import com.excilys.formation.project.service.ComputerDTO;
 import com.excilys.formation.project.utils.Utils;
 import com.excilys.formation.project.utils.Validate;
 
@@ -132,19 +132,7 @@ public class ServiceComputer implements IServiceComputer {
 	 */
 	@Override
 	public void delete(Long id) {
-		try {
-			computerDAO.delete(id, connectionDAO.getConnection());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			try {
-				connectionDAO.closeConnection();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-
+		computerDAO.delete(id);
 	}
 
 	/*
@@ -202,14 +190,20 @@ public class ServiceComputer implements IServiceComputer {
 
 		if (computer.getDiscontinued() != null)
 			discontinued = Utils.formatDate(computer.getDiscontinued());
-		
-		//System.out.println("ID =====>>>> "+computer.getId() );
 
-		if (computer.getCompany().getId() != null) {
-			return new ComputerDTO(computer.getId(), computer.getName(),
-					introduced, discontinued,
-					computer.getCompany().getId(),
-					computer.getCompany().getName());
+		// System.out.println("ID =====>>>> " + computer.getId());
+
+		if (computer.getCompany() != null) {
+			if (computer.getCompany().getId() != null) {
+				return new ComputerDTO(computer.getId(), computer.getName(),
+						introduced, discontinued,
+						computer.getCompany().getId(), computer.getCompany()
+								.getName());
+
+			} else {
+				return new ComputerDTO(computer.getId(), computer.getName(),
+						introduced, discontinued, 0, "");
+			}
 		} else {
 			return new ComputerDTO(computer.getId(), computer.getName(),
 					introduced, discontinued, 0, "");
@@ -262,48 +256,16 @@ public class ServiceComputer implements IServiceComputer {
 	@Override
 	@Transactional
 	public void deleteCompany(Long id) {
-		Connection connection = null;
 
-		try {
-			;
+		List<Long> list = computerDAO.findByCompanyId(id);
 
-			connectionDAO.getConnection().setAutoCommit(false);
-
-			List<Long> list = computerDAO.findByCompanyId(id,
-					connectionDAO.getConnection());
-
-			for (int i = 0; i < list.size(); i++) {
-				computerDAO.delete(list.get(i), connectionDAO.getConnection());
-			}
-
-			companyDAO.delete(id);
-
-			connectionDAO.getConnection().commit();
-
-			System.out.println("Done!");
-
-		} catch (SQLException e) {
-
-			System.out.println(e.getMessage());
-			try {
-				connectionDAO.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-				logger.error("SQL Error: Rollback didn't do ");
-			}
-
-		} finally {
-
-			try {
-				if (connectionDAO.getConnection() != null) {
-					connectionDAO.getConnection().close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				logger.error("SQL Error: Connection closure didn't do ");
-			}
-
+		for (int i = 0; i < list.size(); i++) {
+			computerDAO.delete(list.get(i));
 		}
+
+		companyDAO.delete(id);
+
+		System.out.println("Done!");
 
 	}
 }

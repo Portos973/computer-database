@@ -3,39 +3,45 @@
  * Description: Class ComputerDTO corresponding to Computer table  
  * */
 
-package com.excilys.formation.project.dto;
+package com.excilys.formation.project.service;
 
 import javax.validation.constraints.Size;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import com.excilys.formation.project.utils.Date;
 
 public class ComputerDTO {
-	
+
 	private long id;
-	
-	 
-	@Size(min=2, max=30) 
+
+	@NotEmpty
+	@Size(min = 2, max = 30)
 	private String name;
-	
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+
+	@Date
 	private String discontinued;
-		
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+
+	@Date
 	private String introduced;
 
 	private long companyId;
 	private String companyName;
-	
-	public ComputerDTO(long id,String name,String introduced,String discontinued, long companyId,String companyName){
-		this.id=id;
-		this.name=name;
-		this.companyId=companyId;
-		this.companyName= companyName;
-		this.discontinued=discontinued;
-		this.introduced=introduced;
+
+	public ComputerDTO() {
+		// TODO Auto-generated constructor stub
 	}
-	
+
+	public ComputerDTO(long id, String name, String introduced,
+			String discontinued, long companyId, String companyName) {
+		this.id = id;
+		this.name = name;
+		this.companyId = companyId;
+		this.companyName = companyName;
+		this.discontinued = discontinued;
+		this.introduced = introduced;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -99,10 +105,5 @@ public class ComputerDTO {
 		str.append(this.introduced);
 		return str.toString();
 	}
-
-	
-
-	
-	
 
 }

@@ -25,9 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.models.Company;
 import com.excilys.formation.project.models.Computer;
+import com.excilys.formation.project.service.ComputerDTO;
 
 @Repository
 public class ComputerDAO implements IComputerDAO {
@@ -59,31 +59,7 @@ public class ComputerDAO implements IComputerDAO {
 
 	@Override
 	public List<Computer> computers() {
-
-//		ArrayList<Computer> computers = new ArrayList<Computer>();
-//		String query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name";
-//
-//		jdbcTemplate = new JdbcTemplate(dataSource);
-//		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
-//
-//		for (Map row : rows) {
-//			Computer c = new Computer();
-//
-//			if (row.get("company_id") != null)
-//				c.setCompany(new Company(companyDAO.findById((long) row
-//						.get("company_id")), (long) row.get("company_id")));
-//			else
-//				c.setCompany(new Company(null, null));
-//			c.setDiscontinued((Date) row.get("discontinued"));
-//			c.setIntroduced((Date) row.get("introduced"));
-//			c.setName((String) row.get("name"));
-//			c.setId((Long) row.get("id"));
-//
-//			computers.add(c);
-//		}
-
-
-		
+	
 		Session session = factory.openSession();
 		Query query = session.createQuery("from Computer order by name ");
 		List<Computer> computers = query.list();
@@ -127,17 +103,16 @@ public class ComputerDAO implements IComputerDAO {
 
 	@Override
 	public void create(Long cid, String name, Date date, Date date2) {
-		int rs = 0;
-		Connection cn = null;
+
 		String query = "INSERT INTO computer set company_id= ?, name=?, introduced=?, discontinued=?";
-		PreparedStatement ps = null;
+		
 
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		if (cid != null)
 
 			jdbcTemplate.update(query, new Object[] { cid, name, date, date2 });
 		else
-			jdbcTemplate.update(query, new Object[] { 0, name, date, date2 });
+			jdbcTemplate.update(query, new Object[] { null, name, date, date2 });
 
 	}
 
@@ -153,9 +128,6 @@ public class ComputerDAO implements IComputerDAO {
 
 	@Override
 	public void update(Long id, Long cid, String name, Date date, Date date2) {
-		int rs = 0;
-		Connection cn = null;
-
 		String query = null;
 
 		if (id != null && cid != null && name != null && date != null
@@ -177,7 +149,7 @@ public class ComputerDAO implements IComputerDAO {
 	 * .lang.Long, java.sql.Connection)
 	 */
 	@Override
-	public void delete(Long id, Connection connection) {
+	public void delete(Long id) {
 
 		String query = "DELETE FROM computer where id= ?";
 
@@ -270,16 +242,14 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
-	public ArrayList<Long> findByCompanyId(Long id, Connection connection) {
+	public ArrayList<Long> findByCompanyId(Long id) {
 		ResultSet rs = null;
 		PreparedStatement ps = null;
-		Connection cn = null;
 		String query = "SELECT id FROM computer where company_id=?;";
 		ArrayList<Long> liste = new ArrayList<Long>();
 
 		try {
 
-			cn = connection;
 			ps = dataSource.getConnection().prepareStatement(query);
 			ps.setLong(1, id);
 			rs = ps.executeQuery();

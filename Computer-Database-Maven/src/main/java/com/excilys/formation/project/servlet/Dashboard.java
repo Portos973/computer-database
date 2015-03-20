@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,10 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-import com.excilys.formation.project.dto.ComputerDTO;
-import com.excilys.formation.project.service.IServiceComputer;
-import com.excilys.formation.project.service.Pages;
+import com.excilys.formation.project.controller.IServiceComputer;
+import com.excilys.formation.project.controller.Pages;
+import com.excilys.formation.project.service.ComputerDTO;
 
 /**
  * Servlet implementation class Dashboard

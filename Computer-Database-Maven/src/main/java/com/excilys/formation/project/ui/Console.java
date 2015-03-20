@@ -12,9 +12,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.project.dto.ComputerDTO;
-import com.excilys.formation.project.service.IServiceCompany;
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.controller.IServiceCompany;
+import com.excilys.formation.project.controller.IServiceComputer;
+import com.excilys.formation.project.service.ComputerDTO;
 import com.excilys.formation.project.utils.Utils;
 import com.excilys.formation.project.utils.Validate;
 

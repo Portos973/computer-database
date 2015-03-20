@@ -1,10 +1,10 @@
-package com.excilys.formation.project.service;
+package com.excilys.formation.project.controller;
 
 
 import java.util.List;
 
-import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.models.Computer;
+import com.excilys.formation.project.service.ComputerDTO;
 
 public interface IServiceComputer {
 

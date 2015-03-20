@@ -4,7 +4,7 @@
  * Description: Class Company corresponding to Company table  
  * */
 
-package com.excilys.formation.project.dto;
+package com.excilys.formation.project.service;
 
 import com.excilys.formation.project.models.Company;
 

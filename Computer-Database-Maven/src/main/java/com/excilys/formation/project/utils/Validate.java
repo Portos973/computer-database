@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.controller.IServiceCompany;
+import com.excilys.formation.project.controller.IServiceComputer;
 import com.excilys.formation.project.models.Company;
-import com.excilys.formation.project.service.IServiceCompany;
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.service.ComputerDTO;
 
 
 @Component

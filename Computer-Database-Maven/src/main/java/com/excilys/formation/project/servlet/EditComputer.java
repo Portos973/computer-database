@@ -13,10 +13,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.excilys.formation.project.dto.ComputerDTO;
+
+import com.excilys.formation.project.controller.IServiceCompany;
+import com.excilys.formation.project.controller.IServiceComputer;
 import com.excilys.formation.project.models.Company;
-import com.excilys.formation.project.service.IServiceCompany;
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.service.ComputerDTO;
 
 /**
  * Servlet implementation class EditComputer
