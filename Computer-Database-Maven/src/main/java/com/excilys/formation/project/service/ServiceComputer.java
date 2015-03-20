@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.formation.project.beans.Company;
-import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.models.Company;
+import com.excilys.formation.project.models.Computer;
 import com.excilys.formation.project.persistence.ConnectionDAO;
 import com.excilys.formation.project.persistence.ICompanyDAO;
 import com.excilys.formation.project.persistence.IComputerDAO;
@@ -25,27 +25,28 @@ import com.excilys.formation.project.utils.Validate;
 
 @Service
 public class ServiceComputer implements IServiceComputer {
-	private static final Logger logger = LoggerFactory.getLogger(ServiceComputer.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(ServiceComputer.class);
 
 	List<Company> companies = null;
 	List<Computer> computers = null;
 	Connection cnx = null;
-	
+
 	@Autowired
 	Validate validate;
-	
-	
+
 	@Autowired
 	private IComputerDAO computerDAO;
-	
+
 	@Autowired
 	private ICompanyDAO companyDAO;
-	
+
 	@Autowired
 	private ConnectionDAO connectionDAO;
 
-	public ServiceComputer(){
+	public ServiceComputer() {
 		companies = new ArrayList<Company>();
+		computers = new ArrayList<Computer>();
 	}
 
 	/*
@@ -55,7 +56,7 @@ public class ServiceComputer implements IServiceComputer {
 	 */
 	@Override
 	public List<ComputerDTO> computers() {
-		//List<Computer> computers = null;
+		// List<Computer> computers = null;
 		computers = computerDAO.computers();
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
 
@@ -64,8 +65,6 @@ public class ServiceComputer implements IServiceComputer {
 
 		return computersDTO;
 	}
-
-
 
 	/*
 	 * (non-Javadoc)
@@ -117,9 +116,9 @@ public class ServiceComputer implements IServiceComputer {
 	public void update(Computer comp) {
 		System.out.println(comp.toString());
 		if (comp.getId() > 0) {
-			computerDAO.update(comp.getId(),
-					comp.getCompany().getId(), comp.getName(),
-					comp.getIntroduced(), comp.getDiscontinued());
+			computerDAO.update(comp.getId(), comp.getCompany().getId(),
+					comp.getName(), comp.getIntroduced(),
+					comp.getDiscontinued());
 		}
 
 	}
@@ -158,8 +157,8 @@ public class ServiceComputer implements IServiceComputer {
 	@Override
 	public List<ComputerDTO> pages(Pages page) {
 
-		computers = computerDAO.pages(page.getLimit(),
-				page.getOffset(), page.getSearch());
+		computers = computerDAO.pages(page.getLimit(), page.getOffset(),
+				page.getSearch());
 
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
 
@@ -203,14 +202,18 @@ public class ServiceComputer implements IServiceComputer {
 
 		if (computer.getDiscontinued() != null)
 			discontinued = Utils.formatDate(computer.getDiscontinued());
+		
+		//System.out.println("ID =====>>>> "+computer.getId() );
 
-		if(computer.getCompany().getId()!=null)
-		return new ComputerDTO(computer.getId(), computer.getName(),
-				introduced, discontinued, computer.getCompany().getId(),
-				computer.getCompany().getName());
-		else return new ComputerDTO(computer.getId(), computer.getName(),
-				introduced, discontinued, 0,
-				"");
+		if (computer.getCompany().getId() != null) {
+			return new ComputerDTO(computer.getId(), computer.getName(),
+					introduced, discontinued,
+					computer.getCompany().getId(),
+					computer.getCompany().getName());
+		} else {
+			return new ComputerDTO(computer.getId(), computer.getName(),
+					introduced, discontinued, 0, "");
+		}
 	}
 
 	// Method for convert DTO to Computer object
@@ -228,8 +231,10 @@ public class ServiceComputer implements IServiceComputer {
 		Date discontinued = null;
 
 		try {
-			if (dto.getIntroduced()!="")introduced = formatter.parse(dto.getIntroduced());
-			if (dto.getDiscontinued()!="")discontinued = formatter.parse(dto.getDiscontinued());
+			if (dto.getIntroduced() != null)
+				introduced = formatter.parse(dto.getIntroduced());
+			if (dto.getDiscontinued() != null)
+				discontinued = formatter.parse(dto.getDiscontinued());
 		} catch (ParseException e) {
 			e.printStackTrace();
 			logger.error("Conversion didn't do ");
@@ -268,12 +273,10 @@ public class ServiceComputer implements IServiceComputer {
 					connectionDAO.getConnection());
 
 			for (int i = 0; i < list.size(); i++) {
-				computerDAO.delete(list.get(i),
-						connectionDAO.getConnection());
+				computerDAO.delete(list.get(i), connectionDAO.getConnection());
 			}
 
-			companyDAO.delete(id,
-					connectionDAO.getConnection());
+			companyDAO.delete(id);
 
 			connectionDAO.getConnection().commit();
 

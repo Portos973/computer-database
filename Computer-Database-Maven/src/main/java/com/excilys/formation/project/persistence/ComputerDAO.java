@@ -18,13 +18,16 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.project.beans.Company;
-import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.models.Company;
+import com.excilys.formation.project.models.Computer;
 
 @Repository
 public class ComputerDAO implements IComputerDAO {
@@ -34,9 +37,9 @@ public class ComputerDAO implements IComputerDAO {
 
 	@Autowired
 	private ICompanyDAO companyDAO;
-
+	
 	@Autowired
-	private ConnectionDAO connectionDAO;
+	private  SessionFactory factory;
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -57,28 +60,34 @@ public class ComputerDAO implements IComputerDAO {
 	@Override
 	public List<Computer> computers() {
 
-		ArrayList<Computer> computers = new ArrayList<Computer>();
-		String query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name";
+//		ArrayList<Computer> computers = new ArrayList<Computer>();
+//		String query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name";
+//
+//		jdbcTemplate = new JdbcTemplate(dataSource);
+//		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
+//
+//		for (Map row : rows) {
+//			Computer c = new Computer();
+//
+//			if (row.get("company_id") != null)
+//				c.setCompany(new Company(companyDAO.findById((long) row
+//						.get("company_id")), (long) row.get("company_id")));
+//			else
+//				c.setCompany(new Company(null, null));
+//			c.setDiscontinued((Date) row.get("discontinued"));
+//			c.setIntroduced((Date) row.get("introduced"));
+//			c.setName((String) row.get("name"));
+//			c.setId((Long) row.get("id"));
+//
+//			computers.add(c);
+//		}
 
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
 
-		for (Map row : rows) {
-			Computer c = new Computer();
-
-			if (row.get("company_id") != null)
-				c.setCompany(new Company(companyDAO.findById((long) row
-						.get("company_id")), (long) row.get("company_id")));
-			else
-				c.setCompany(new Company(null, null));
-			c.setDiscontinued((Date) row.get("discontinued"));
-			c.setIntroduced((Date) row.get("introduced"));
-			c.setName((String) row.get("name"));
-			c.setId((Long) row.get("id"));
-
-			computers.add(c);
-		}
-
+		
+		Session session = factory.openSession();
+		Query query = session.createQuery("from Computer order by name ");
+		List<Computer> computers = query.list();
+		
 		System.out.println("/** List of computer **/");
 		for (int i = 0; i < computers.size(); i++)
 			System.out.println(computers.get(i).getName());
@@ -97,10 +106,6 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 	@Override
 	public void details(Long id) {
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		Connection cn = null;
-		ArrayList<Computer> computers = new ArrayList<Computer>();
 		String query = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id,  cc.name FROM computer As c, company  As cc where c.id=? and  c.company_id=cc.id";
 
 		jdbcTemplate = new JdbcTemplate(dataSource);

@@ -11,8 +11,7 @@
 			<div class="pull-left">
 				<form id="searchForm" action="dashboard" method="GET"
 					class="form-inline">
-					<input type="hidden" value="${index}" name="index" /> <input
-						type="hidden" value="${limit}" name="limit" /> <input
+ <input
 						type="search" id="searchbox" name="search" class="form-control"
 						placeholder="Search name" /> <input type="submit"
 						id="searchsubmit" value="<spring:message code="dashboard.search"></spring:message>" class="btn btn-primary" />

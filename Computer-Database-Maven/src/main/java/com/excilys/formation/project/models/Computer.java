@@ -3,19 +3,36 @@
  * Description: Class Computer corresponding to Computer table  
  * */
 
-package com.excilys.formation.project.beans;
+package com.excilys.formation.project.models;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.springframework.stereotype.Component;
 
-
+@Entity
+@Table(name = "computer")
 public class Computer {
 
+	@Column(name = "name")
 	private String name;
+	@OneToOne
 	private Company company;
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
+	@Column(name = "discontinued")
 	private Date discontinued;
+	@Column(name = "introduced")
 	private Date introduced;
 
 	public String getName() {
@@ -77,8 +94,7 @@ public class Computer {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((company == null) ? 0 : company.hashCode());
+		result = prime * result + ((company == null) ? 0 : company.hashCode());
 		result = prime * result
 				+ ((discontinued == null) ? 0 : discontinued.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -124,7 +140,5 @@ public class Computer {
 			return false;
 		return true;
 	}
-	
-	
 
 }

@@ -3,15 +3,29 @@
  * Description: Class Company corresponding to Company table  
  * */
 
-package com.excilys.formation.project.beans;
+package com.excilys.formation.project.models;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+import static javax.persistence.GenerationType.IDENTITY;
 
+@Entity
+@Table(name = "company")
 public class Company {
+	@Column(name = "name", unique = true, nullable = false, length = 30)
 	private String name;
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	//Company(){}
+	public Company() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Company(String name, Long id) {
 		this.name = name;
@@ -33,8 +47,6 @@ public class Company {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
-	
 
 	@Override
 	public String toString() {

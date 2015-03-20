@@ -3,8 +3,8 @@ package com.excilys.formation.project.service;
 
 import java.util.List;
 
-import com.excilys.formation.project.beans.Computer;
 import com.excilys.formation.project.dto.ComputerDTO;
+import com.excilys.formation.project.models.Computer;
 
 public interface IServiceComputer {
 

@@ -1,9 +1,8 @@
 package com.excilys.formation.project.persistence;
 
-import java.sql.Connection;
 import java.util.List;
 
-import com.excilys.formation.project.beans.Company;
+import com.excilys.formation.project.models.Company;
 
 public interface ICompanyDAO {
 
@@ -13,7 +12,7 @@ public interface ICompanyDAO {
 	public abstract String findById(Long id);
 
 	// delete line of company table
-	public abstract void delete(Long id, Connection connection);
+	public abstract void delete(Long id);
 
 
 

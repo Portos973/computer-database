@@ -1,26 +1,24 @@
 package com.excilys.formation.project.servlet;
 
-import java.io.IOException;
+
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.service.IServiceComputer;
 import com.excilys.formation.project.service.Pages;
-import com.excilys.formation.project.service.ServiceComputer;
 
 /**
  * Servlet implementation class Dashboard
@@ -28,16 +26,15 @@ import com.excilys.formation.project.service.ServiceComputer;
 
 @Controller
 @RequestMapping("/dashboard")
-public class Dashboard {
-	private static final long serialVersionUID = 1L;
+public class Dashboard {	
+	private static final String PARAM_SEARCH = "search";
+	private static final String PARAM_LIMIT = "limit";
+	private static final String PARAM_INDEX= "index";
+	private static final String PARAM_SELECTION = "selection";
 	
 	@Autowired	
 	private IServiceComputer service;
 	
-//	 public void init(ServletConfig config) throws ServletException  {
-//		    super.init(config);
-//		    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-//		    }
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -52,12 +49,14 @@ public class Dashboard {
 	 *      response)
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	protected String doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected String doGet(ModelMap model, @RequestParam(value=PARAM_SEARCH, required=false) String search,
+			@RequestParam(value=PARAM_LIMIT, required=false) String limit,
+			@RequestParam(value=PARAM_INDEX, required=false) String index){
 		// TODO Auto-generated method stub
 
 		System.out.println("doGet");
-		String search = request.getParameter("search");
+		
+		//String search = request.getParameter("search");
 
 		List<ComputerDTO> computersDTO = null;
 		Pages page = null;
@@ -65,8 +64,8 @@ public class Dashboard {
 
 		int nbPages = (size / 100) + 1;
 
-		String index = request.getParameter("index");
-		String limit = request.getParameter("limit");
+		//String index = request.getParameter("index");
+		//String limit = request.getParameter("limit");
 
 		// value of limit and offset calcul
 		int i = 1;
@@ -88,17 +87,17 @@ public class Dashboard {
 			System.err.println("Bad instanciation of service");
 		}
 
-		page = new Pages(l, l * i - l, search);
+		page = new Pages(i,l, l * i - l, search);
 		computersDTO = service.pages(page);
 		
 		size = service.count(search);
 		nbPages = (size / l) + 1;
 
-		request.setAttribute("Computers", computersDTO);
-		request.setAttribute("size", size);
-		request.setAttribute("index", i);
-		request.setAttribute("limit", page.getLimit());
-		request.setAttribute("nbPages", nbPages);
+		model.addAttribute("Computers", computersDTO);
+		model.addAttribute("size", size);
+		model.addAttribute("index", page.getIndex());
+		model.addAttribute("limit", page.getLimit());
+		model.addAttribute("nbPages", nbPages);
 
 		return "dashboard";
 		
@@ -110,10 +109,8 @@ public class Dashboard {
 	 *      response)
 	 */
 	 @RequestMapping(method = RequestMethod.POST)
-	protected String doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected String doPost(ModelMap model, @RequestParam(value=PARAM_SELECTION, required=false) String selection){
 		// TODO Auto-generated method stub
-		String selection = request.getParameter("selection");
 
 		if (selection != null && selection.length() > 0) {
 			System.out.println(selection);
@@ -130,7 +127,7 @@ public class Dashboard {
 
 		}
 
-		return "dashboard";
+		return "redirect:dashboard";
 	}
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.excilys.formation.project.beans.Company;
+import com.excilys.formation.project.models.Company;
 import com.excilys.formation.project.persistence.ICompanyDAO;
 
 

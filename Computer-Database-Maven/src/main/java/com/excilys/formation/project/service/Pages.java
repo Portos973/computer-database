@@ -3,7 +3,7 @@ package com.excilys.formation.project.service;
 
 import java.util.List;
 
-import com.excilys.formation.project.beans.Computer;
+import com.excilys.formation.project.models.Computer;
 import com.excilys.formation.project.persistence.ComputerDAO;
 
 
@@ -15,7 +15,8 @@ public class Pages {
 	private String search;
 	private ComputerDAO computerDAO;
 
-	public Pages(int limit, int offset, String search) {
+	public Pages(int index,int limit, int offset, String search) {
+		this.index = index;
 		this.limit = limit;
 		this.offset = offset;
 		this.search = search;

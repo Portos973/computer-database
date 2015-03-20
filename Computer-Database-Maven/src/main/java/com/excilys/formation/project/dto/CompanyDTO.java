@@ -6,7 +6,7 @@
 
 package com.excilys.formation.project.dto;
 
-import com.excilys.formation.project.beans.Company;
+import com.excilys.formation.project.models.Company;
 
 public class CompanyDTO {
 	private String name;
