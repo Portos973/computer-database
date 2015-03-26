@@ -21,6 +21,6 @@
 				Database </a>
 		</div>
 	</header>
-	<span style="float: right"> <a href="?lang=	en">en</a> | <a
-		href="?lang=fr">fr</a>
+	<span style="float: right"> <a href="?lang=	en"><img src="images/en_flag.png"></a> | <a
+		href="?lang=fr"><img src="images/fr_flag.png"></a>
 	</span>

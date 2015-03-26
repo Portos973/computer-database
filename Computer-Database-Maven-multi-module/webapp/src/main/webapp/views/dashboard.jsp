@@ -1,25 +1,36 @@
 
 <%@include file="header.jsp"%>
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 
 
 
 <section id="main">
 	<div class="container">
-		<h1 id="homeTitle">${size} <spring:message code="dashboard.found"></spring:message></h1>
+		<h1 id="homeTitle">${size}
+			<spring:message code="dashboard.found"></spring:message>
+		</h1>
 		<div id="actions" class="form-horizontal">
 			<div class="pull-left">
 				<form id="searchForm" action="dashboard" method="GET"
 					class="form-inline">
- <input
-						type="search" id="searchbox" name="search" class="form-control"
-						placeholder="Search name" /> <input type="submit"
-						id="searchsubmit" value="<spring:message code="dashboard.search"></spring:message>" class="btn btn-primary" />
+					<input type="search" id="searchbox" name="search"
+						class="form-control" placeholder="<spring:message code="dashboard.search.name"></spring:message>" /> <input
+						type="submit" id="searchsubmit"
+						value="<spring:message code="dashboard.search"></spring:message>"
+						class="btn btn-primary" />
 				</form>
 			</div>
 			<div class="pull-right">
-				<a class="btn btn-success" id="addComputer" href=addComputer><spring:message code="dashboard.add"></spring:message></a> <a class="btn btn-default" id="editComputer" href="#"
-					onclick="$.fn.toggleEditMode();"><spring:message code="dashboard.edit"></spring:message></a>
+				<sec:authorize ifAnyGranted="ROLE_ADMIN">
+					<a class="btn btn-success" id="addComputer" href=addComputer><spring:message
+							code="dashboard.add"></spring:message></a>
+					<a class="btn btn-default" id="editComputer" href="#"
+						onclick="$.fn.toggleEditMode();"><spring:message
+							code="dashboard.edit"></spring:message></a>
+				</sec:authorize>
 			</div>
 		</div>
 	</div>
@@ -42,12 +53,29 @@
 								class="fa fa-trash-o fa-lg"></i>
 						</a>
 					</span></th>
-					<th><spring:message code="dashboard.name"></spring:message></th>
-					<th><spring:message code="dashboard.introduced"></spring:message></th>
+					<th><spring:message code="dashboard.name"></spring:message> <a
+						href="dashboard?order=name&search=${search}&sort=ASC"><i
+							class="fa fa-angle-up"></i></a> <a
+						href="dashboard?order=name&search=${search}&sort=DESC"><i
+							class="fa fa-angle-down"></i></a></th>
+					<th><spring:message code="dashboard.introduced"></spring:message>
+						<a href="dashboard?order=introduced&search=${search}&sort=ASC"><i
+							class="fa fa-angle-up"></i></a> <a
+						href="dashboard?order=introduced&search=${search}&sort=DESC"><i
+							class="fa fa-angle-down"></i></a></th>
 					<!-- Table header for Discontinued Date -->
-					<th><spring:message code="dashboard.discontinued"></spring:message></th>
+					<th><spring:message code="dashboard.discontinued"></spring:message>
+						<a href="dashboard?order=discontinued&search=${search}&sort=ASC">
+							<i class="fa fa-angle-up"></i>
+					</a> <a href="dashboard?order=disocntinued&search=${search}&sort=DESC">
+							<i class="fa fa-angle-down"></i>
+					</a></th>
 					<!-- Table header for Company -->
-					<th><spring:message code="dashboard.company"></spring:message></th>
+					<th><spring:message code="dashboard.company"></spring:message>
+						<a href="dashboard?order=company&search=${search}&sort=ASC"><i
+							class="fa fa-angle-up"></i></a> <a
+						href="dashboard?order=company&search=${search}&sort=DESC"><i
+							class="fa fa-angle-down"></i></a></th>
 
 				</tr>
 			</thead>
@@ -61,7 +89,7 @@
 							class="cb" value="${Computer.id }"></td>
 						<td><a
 							href="editComputer?id=${Computer.id }&&computerName=${Computer.name}&&introduced=${Computer.introduced }&&discontinued=${Computer.discontinued }"
-							onclick=""><c:out value="${Computer.name}"></c:out></a></td>
+							onclick="">${Computer.name}</a></td>
 						<td>${Computer.introduced }</td>
 						<td>${Computer.discontinued }</td>
 						<td>${Computer.companyName }</td>
@@ -92,7 +120,7 @@
 
 
 		<div class="btn-group btn-group-sm pull-right" role="group">
-			<form action="dashboard?index=$	{index}" method="get">
+			<form action="dashboard?index=${index}" method="get">
 				<input type="submit" id="10" name="limit" value="10"
 					class="btn btn-default"> <input type="submit" id="50"
 					name="limit" value="50" class="btn btn-default"> <input
