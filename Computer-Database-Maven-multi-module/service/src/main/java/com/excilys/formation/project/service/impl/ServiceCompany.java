@@ -1,4 +1,4 @@
-package com.excilys.formation.project.service;
+package com.excilys.formation.project.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.excilys.formation.project.models.Company;
 import com.excilys.formation.project.persistence.ICompanyDAO;
+import com.excilys.formation.project.service.*;
 
 
 @Service

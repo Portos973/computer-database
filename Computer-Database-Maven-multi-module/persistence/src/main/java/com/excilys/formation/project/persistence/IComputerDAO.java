@@ -19,7 +19,7 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#details(java.lang.Long)
 	 */
-	public abstract void details(Long id);
+	public abstract Computer details(Long id);
 
 	// Creation and insertion of computer in database
 	/* (non-Javadoc)
@@ -56,13 +56,13 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#count(java.lang.String)
 	 */
-	public abstract int count(String search);
+	public abstract Long count(String search);
 
 	// find computer's id by company's id
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#findByCompanyId(java.lang.Long, java.sql.Connection)
 	 */
-	public abstract ArrayList<Long> findByCompanyId(Long id);
+	public abstract List<Long> findByCompanyId(Long id);
 
 
 }

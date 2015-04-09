@@ -1,4 +1,4 @@
-package com.excilys.formation.project.service;
+package com.excilys.formation.project.service.impl;
 
 import java.sql.Connection;
 import java.text.ParseException;
@@ -7,10 +7,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.project.dto.ComputerDTO;
@@ -20,8 +28,9 @@ import com.excilys.formation.project.persistence.ICompanyDAO;
 import com.excilys.formation.project.persistence.IComputerDAO;
 import com.excilys.formation.project.utils.Utils;
 import com.excilys.formation.project.validation.Validate;
+import com.excilys.formation.project.service.*;
 
-@Service
+@Path("/computers")
 public class ServiceComputer implements IServiceComputer {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ServiceComputer.class);
@@ -39,7 +48,6 @@ public class ServiceComputer implements IServiceComputer {
 	@Autowired
 	private ICompanyDAO companyDAO;
 
-
 	public ServiceComputer() {
 		companies = new ArrayList<Company>();
 		computers = new ArrayList<Computer>();
@@ -51,6 +59,9 @@ public class ServiceComputer implements IServiceComputer {
 	 * @see com.excilys.formation.project.service.ServiceInterface#computers()
 	 */
 	@Override
+	@GET
+	@Path("/all")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<ComputerDTO> computers() {
 		computers = computerDAO.computers();
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
@@ -69,9 +80,15 @@ public class ServiceComputer implements IServiceComputer {
 	 * .Long)
 	 */
 	@Override
-	public void details(Long id) {
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ComputerDTO details(@PathParam("id") Long id) {
 
-		computerDAO.details(id);
+		ComputerDTO computerDTO = this.fromComputerToDTO(computerDAO
+				.details(id));
+
+		return computerDTO;
 
 	}
 
@@ -83,6 +100,9 @@ public class ServiceComputer implements IServiceComputer {
 	 * .formation.project.beans.Computer)
 	 */
 	@Override
+	@POST
+	@Path("/create")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public void create(Computer computer) {
 
 		if (!validate.checkCompanyId(computer.getCompany().getId())) {
@@ -95,7 +115,7 @@ public class ServiceComputer implements IServiceComputer {
 			computerDAO.create(computer.getCompany().getId(),
 					computer.getName(), computer.getIntroduced(),
 					computer.getDiscontinued());
-			System.out.println("===========> création faite !!!");
+			System.out.println("\n");
 
 		}
 	}
@@ -108,6 +128,9 @@ public class ServiceComputer implements IServiceComputer {
 	 * .formation.project.beans.Computer)
 	 */
 	@Override
+	@POST
+	@Path("/update")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public void update(Computer comp) {
 		System.out.println(comp.toString());
 		if (comp.getId() > 0) {
@@ -126,7 +149,9 @@ public class ServiceComputer implements IServiceComputer {
 	 * .Long)
 	 */
 	@Override
-	public void delete(Long id) {
+	@DELETE
+	@Path("/{id}")
+	public void delete(@PathParam("id") Long id) {
 		computerDAO.delete(id);
 	}
 
@@ -159,8 +184,8 @@ public class ServiceComputer implements IServiceComputer {
 	 * .String)
 	 */
 	@Override
-	public int count(String search) {
-		int count = 0;
+	public Long count(String search) {
+		Long count;
 
 		count = computerDAO.count(search);
 
@@ -180,13 +205,13 @@ public class ServiceComputer implements IServiceComputer {
 		String introduced = null;
 		String discontinued = null;
 
-		if (computer.getIntroduced() != null)
+		if (computer.getIntroduced() != null) {
 			introduced = Utils.formatDate(computer.getIntroduced());
+		}
 
-		if (computer.getDiscontinued() != null)
+		if (computer.getDiscontinued() != null) {
 			discontinued = Utils.formatDate(computer.getDiscontinued());
-
-		// System.out.println("ID =====>>>> " + computer.getId());
+		}
 
 		if (computer.getCompany() != null) {
 			if (computer.getCompany().getId() != null) {

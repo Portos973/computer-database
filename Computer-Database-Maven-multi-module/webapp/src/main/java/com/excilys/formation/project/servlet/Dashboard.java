@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.service.*;
 import com.excilys.formation.project.service.Pages;
 import com.excilys.formation.project.dto.ComputerDTO;
 
@@ -25,6 +25,8 @@ public class Dashboard {
 	private static final String PARAM_LIMIT = "limit";
 	private static final String PARAM_INDEX= "index";
 	private static final String PARAM_SELECTION = "selection";
+	private static final String PARAM_ORDER = "order";
+	private static final String PARAM_SORT= "sort";
 	
 	@Autowired	
 	private IServiceComputer service;
@@ -45,7 +47,9 @@ public class Dashboard {
 	@RequestMapping(method = RequestMethod.GET)
 	protected String doGet(ModelMap model, @RequestParam(value=PARAM_SEARCH, required=false) String search,
 			@RequestParam(value=PARAM_LIMIT, required=false) String limit,
-			@RequestParam(value=PARAM_INDEX, required=false) String index){
+			@RequestParam(value=PARAM_INDEX, required=false) String index,
+			@RequestParam(value=PARAM_ORDER, required=false) String order,
+			@RequestParam(value=PARAM_SORT, required=false) String sort){
 		// TODO Auto-generated method stub
 
 		System.out.println("doGet");
@@ -54,9 +58,9 @@ public class Dashboard {
 
 		List<ComputerDTO> computersDTO = null;
 		Pages page = null;
-		int size = 0;
+		long size = 0;
 
-		int nbPages = (size / 100) + 1;
+		long nbPages =0;
 
 		//String index = request.getParameter("index");
 		//String limit = request.getParameter("limit");
@@ -81,7 +85,7 @@ public class Dashboard {
 			System.err.println("Bad instanciation of service");
 		}
 
-		page = new Pages(i,l, l * i - l, search);
+		page = new Pages(l,i, l * i - l, search, sort, order);
 		computersDTO = service.pages(page);
 		
 		size = service.count(search);

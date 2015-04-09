@@ -11,7 +11,7 @@ public interface IServiceComputer {
 
 	public abstract List<ComputerDTO> computers();
 
-	public abstract void details(Long id);
+	public abstract ComputerDTO details(Long id);
 
 	public abstract void create(Computer computer);
 

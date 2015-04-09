@@ -1,7 +1,7 @@
 
 /**
  * @author Anderson F.
- * Description: Class Company corresponding to Company table  
+ * Description: Class Company corresponding to Company table, the instance variable are primitive type
  * */
 
 package com.excilys.formation.project.dto;

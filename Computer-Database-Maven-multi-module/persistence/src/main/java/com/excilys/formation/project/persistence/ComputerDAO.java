@@ -5,13 +5,8 @@
 
 package com.excilys.formation.project.persistence;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -22,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.project.models.Company;
 import com.excilys.formation.project.models.Computer;
 
 @Repository
@@ -59,11 +53,6 @@ public class ComputerDAO implements IComputerDAO {
 		Session session = factory.openSession();
 		Query query = session.createQuery("from Computer order by name ");
 		List<Computer> computers = query.list();
-		
-		System.out.println("/** List of computer **/");
-		for (int i = 0; i < computers.size(); i++)
-			System.out.println(computers.get(i).getName());
-
 		return computers;
 
 	}
@@ -77,14 +66,15 @@ public class ComputerDAO implements IComputerDAO {
 	 * .lang.Long)
 	 */
 	@Override
-	public void details(Long id) {
-		String query = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id,  cc.name FROM computer As c, company  As cc where c.id=? and  c.company_id=cc.id";
+	public Computer details(Long id) {
+		Session session = factory.openSession();
+		Query query = session.createQuery("SELECT cmp FROM Computer cmp left outer join cmp.company as company where cmp.id= :id");
+		
+		query.setLong("id", id);
+		
+		Computer computer = (Computer) query.uniqueResult();
 
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		Computer computer = jdbcTemplate.queryForObject(query,
-				new Object[] { id }, new ComputerMapper());
-
-		System.out.println(computer.toString());
+		return computer;
 
 	}
 
@@ -147,10 +137,12 @@ public class ComputerDAO implements IComputerDAO {
 	@Override
 	public void delete(Long id) {
 
-		String query = "DELETE FROM computer where id= ?";
+		Session session = factory.openSession();
+		Query query = session
+				.createQuery("delete Computer where where id = :id");
+		query.setParameter("id", id);
 
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.update(query, new Object[] { id });
+		query.executeUpdate();
 
 	}
 
@@ -165,37 +157,24 @@ public class ComputerDAO implements IComputerDAO {
 
 	@Override
 	public List<Computer> pages(int limit, int offset, String search) {
-		String query = null;
+		Session session = factory.openSession();
+		Query query = null;
 
-		ArrayList<Computer> computers = new ArrayList<Computer>();
-
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		List<Map<String, Object>> rows = null;
 		if (search == null) {
-			query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c ORDER BY c.name LIMIT ? OFFSET ?;";
-			rows = jdbcTemplate.queryForList(query, new Object[] { limit,
-					offset });
+			query = session.createQuery("FROM Computer ORDER BY name asc");
+			query.setFirstResult(offset);
+			query.setMaxResults(limit);
+
 		} else {
-			query = "SELECT c.company_id, c.discontinued, c.introduced, c.name, c.id FROM computer As c WHERE c.name LIKE ? ORDER BY c.name LIMIT ? OFFSET ?";
-			rows = jdbcTemplate.queryForList(query, new Object[] {
-					search + "%", limit, offset });
+			query = session.createQuery("FROM Computer WHERE name LIKE :search ORDER BY name asc ");
+			query.setFirstResult(offset);
+			query.setMaxResults(limit);
+			query.setParameter("search", search+"%");
+
 		}
 
-		for (Map row : rows) {
-			Computer c = new Computer();
+		List<Computer> computers = query.list();
 
-			if (row.get("company_id") != null)
-				c.setCompany(new Company(companyDAO.findById((long) row
-						.get("company_id")), (long) row.get("company_id")));
-			else
-				c.setCompany(new Company(null, null));
-			c.setDiscontinued((Date) row.get("discontinued"));
-			c.setIntroduced((Date) row.get("introduced"));
-			c.setName((String) row.get("name"));
-			c.setId((Long) row.get("id"));
-
-			computers.add(c);
-		}
 
 		return computers;
 	}
@@ -210,19 +189,19 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
-	public int count(String search) {
+	public Long count(String search) {
+		Session session = factory.openSession();
+		Query query = null;
 
-		String query = null;
-
-		int count;
+		Long count;
 
 		if (search != null) {
-			query = "SELECT count(name) FROM computer As c WHERE name LIKE ? ";
-			count = jdbcTemplate.queryForObject(query, new Object[] { search
-					+ "%" }, Integer.class);
+			query = session.createQuery("SELECT count(C.name) FROM Computer C WHERE name LIKE :search ");
+			query.setParameter("search", search+"%");
+			count = (Long) query.uniqueResult();
 		} else {
-			query = "SELECT count(*) FROM computer As c";
-			count = jdbcTemplate.queryForObject(query, Integer.class);
+			query = session.createQuery("SELECT count(C.name) FROM Computer C");
+			count = (Long) query.uniqueResult();
 		}
 
 		return count;
@@ -238,39 +217,16 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
-	public ArrayList<Long> findByCompanyId(Long id) {
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		String query = "SELECT id FROM computer where company_id=?;";
-		ArrayList<Long> liste = new ArrayList<Long>();
+	public List<Long> findByCompanyId(Long id) {
 
-		try {
-
-			ps = dataSource.getConnection().prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				liste.add(rs.getLong(1));
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Request error");
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-
-				if (ps != null)
-					ps.close();
-
-			} catch (SQLException e) {
-				System.err.println("Sockets don't close");
-			}
-		}
+		
+		Session session = factory.openSession();
+		Query query = session.createQuery("Select C.id from Computer C where company_id= :id ");
+		query.setParameter("id", id);
+		
+		List<Long> liste = query.list();
+		
 		return liste;
-
 	}
 
 }

@@ -1,6 +1,5 @@
 
 <%@include file="header.jsp"%>
-<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
@@ -25,8 +24,7 @@
 			</div>
 			<div class="pull-right">
 				<sec:authorize ifAnyGranted="ROLE_ADMIN">
-					<a class="btn btn-success" id="addComputer" href=addComputer><spring:message
-							code="dashboard.add"></spring:message></a>
+					<a class="btn btn-success" id="addComputer" href=addComputer><spring:message code="dashboard.add"></spring:message></a>
 					<a class="btn btn-default" id="editComputer" href="#"
 						onclick="$.fn.toggleEditMode();"><spring:message
 							code="dashboard.edit"></spring:message></a>

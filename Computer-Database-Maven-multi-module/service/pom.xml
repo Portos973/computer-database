@@ -14,8 +14,6 @@
 
 
 	<dependencies>
-		<!-- <dependency> <groupId>${parent.groupId}</groupId> <artifactId>core</artifactId> 
-			<version>${parent.version}</version> </dependency> -->
 		<dependency>
 			<groupId>${parent.groupId}</groupId>
 			<artifactId>binding</artifactId>
@@ -27,14 +25,10 @@
 			<version>${parent.version}</version>
 		</dependency>
 
+		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
 		</dependency>
 
 		<dependency>
@@ -43,13 +37,21 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
 		</dependency>
 
+
+		<!-- Spring Transaction -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
+		</dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
 		</dependency>
 	</dependencies>
 

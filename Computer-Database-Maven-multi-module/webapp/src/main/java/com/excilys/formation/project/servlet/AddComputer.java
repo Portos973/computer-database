@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.excilys.formation.project.service.IServiceCompany;
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.service.*;
 import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.models.Company;
 

@@ -1,6 +1,6 @@
 /**
  * @author Anderson F.
- * Description: Class ComputerDTO corresponding to Computer table  
+ * Description: Class ComputerDTO corresponding to Computer table, the instance variable are primitive type
  * */
 
 package com.excilys.formation.project.dto;
@@ -92,17 +92,28 @@ public class ComputerDTO {
 
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		str.append("\n Détails de l'ordinateur: \n company_id: ");
+		str.append("\n Details of computer: \n Company ID: ");
 		str.append(this.companyId);
+		str.append("\n Company Name: ");
 		str.append(this.companyName);
 		str.append("\n ID: ");
 		str.append(this.id);
-		str.append("\n nom: ");
+		str.append("\n Name: ");
 		str.append(this.name);
-		str.append("\n discontinued: ");
-		str.append(this.discontinued);
-		str.append("\n introduced: ");
-		str.append(this.introduced);
+
+		str.append("\n Discontinued: ");
+		if (this.discontinued != null) {
+			str.append(this.discontinued);
+		} else {
+			str.append(" ");
+		}
+		str.append("\n Introduced: ");
+		if (this.introduced != null) {
+			str.append(this.introduced);
+		} else {
+			str.append(" ");
+		}
+
 		return str.toString();
 	}
 

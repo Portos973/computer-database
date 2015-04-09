@@ -1,6 +1,6 @@
 /**
  * @author Anderson F.
- * Description: Classe Console permet de lancer la connection et d'effectuer divers transactions 
+ * Description: Classe Console allow to launch the menu 
  * */
 
 package com.excilys.formation.project.ui;
@@ -12,8 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.excilys.formation.project.service.IServiceCompany;
-import com.excilys.formation.project.service.IServiceComputer;
+import com.excilys.formation.project.service.*;
 import com.excilys.formation.project.dto.ComputerDTO;
 import com.excilys.formation.project.utils.Utils;
 import com.excilys.formation.project.validation.Validate;
@@ -30,9 +29,17 @@ public class Console {
 	@Autowired
 	private Validate validate;
 
+	@Autowired
+	ComputerCli computerView;
+	
+	@Autowired
+	CompanyCli companyView;
+	
 	public void launch() {
+	
 
 		Scanner sc = new Scanner(System.in);
+		
 
 		while (true) {
 			System.out.println("Hello, make a choice: ");
@@ -46,12 +53,12 @@ public class Console {
 
 			switch (sc.nextLine()) {
 			case "1":
-				serviceComputer.computers();
+				computerView.computers();
 				System.out.println("\n");
 				break;
 
 			case "2":
-				serviceCompany.companies();
+				companyView.companies();
 				System.out.println("\n");
 				break;
 
@@ -62,7 +69,7 @@ public class Console {
 					System.out.println(" Enter one id which exist, please");
 					id1 = sc.nextLong();
 				}
-				serviceComputer.details(id1);
+				computerView.details(id1);
 				System.out.println("\n");
 				break;
 
@@ -98,7 +105,8 @@ public class Console {
 				Long cid = sc.nextLong();
 
 				ComputerDTO dto = new ComputerDTO(0, n, d, f, cid, null);
-				serviceComputer.create(serviceComputer.fromDTOToComputer(dto));
+				computerView.create(serviceComputer.fromDTOToComputer(dto));
+				System.out.println("===========> Computer created !!! <=========");
 
 				break;
 
@@ -138,14 +146,14 @@ public class Console {
 
 				ComputerDTO dto1 = new ComputerDTO(id, name, date, fin, compId,
 						null);
-				serviceComputer.update(serviceComputer.fromDTOToComputer(dto1));
+				computerView.update(serviceComputer.fromDTOToComputer(dto1));
 
 				break;
 
 			case "6":
 				System.out
 						.println(" Enter the cumputer's id that you want to delete:");
-				// service.delete(sc.nextLong());
+				computerView.delete(sc.nextLong());
 				System.out.println("\n");
 				break;
 
@@ -164,8 +172,7 @@ public class Console {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
-		ApplicationContext context = new ClassPathXmlApplicationContext(
-				"SpringContext-console.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("/SpringContext-console.xml");
 		Console console = context.getBean(Console.class);
 
 		console.launch();
