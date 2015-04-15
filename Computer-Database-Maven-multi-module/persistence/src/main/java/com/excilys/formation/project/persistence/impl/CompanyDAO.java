@@ -3,7 +3,7 @@
  * Description: Class CompanyDAO allows to handle company table  
  * */
 
-package com.excilys.formation.project.persistence;
+package com.excilys.formation.project.persistence.impl;
 
 import java.util.List;
 import org.hibernate.Query;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.project.models.Company;
+import com.excilys.formation.project.persistence.*;
 
 @Repository
 public class CompanyDAO implements ICompanyDAO {
@@ -36,13 +37,9 @@ public class CompanyDAO implements ICompanyDAO {
 		// factory= new Configuration().configure().buildSessionFactory(new
 		// StandardServiceRegistryBuilder().build());
 
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session.createQuery("from Company order by name ");
 		List<Company> companies = query.list();
-
-		System.out.println("\n\n/** List of companies **/");
-		for (int i = 0; i < companies.size(); i++)
-			System.out.println(companies.get(i).getName());
 
 		return companies;
 
@@ -59,7 +56,7 @@ public class CompanyDAO implements ICompanyDAO {
 	@Transactional
 	public String findById(Long id) {
 
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session.createQuery("from Company where id = :id ");
 		query.setParameter("id", id);
 		Company company = (Company) query.uniqueResult();
@@ -79,7 +76,7 @@ public class CompanyDAO implements ICompanyDAO {
 	@Transactional
 	public void delete(Long id) {
 
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session
 				.createQuery("delete Company where where id = :id");
 		query.setParameter("id", id);

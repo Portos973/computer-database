@@ -26,6 +26,10 @@ public class ComputerCli {
 	Client client;
 	WebTarget computerTarget;
 
+	/**
+	 * Constructor which initialize the instance variable:
+	 * one client and webTarget
+	 */
 	private ComputerCli() {
 		client = ClientBuilder.newBuilder().register(JacksonFeature.class)
 				.build();
@@ -34,6 +38,9 @@ public class ComputerCli {
 
 	}
 
+	/**
+	 * Take a list of computers
+	 */
 	public void computers() {
 		List<ComputerDTO> computersDTO = computerTarget.path("/all")
 				.request(MediaType.APPLICATION_JSON)
@@ -44,6 +51,10 @@ public class ComputerCli {
 			System.out.println(computersDTO.get(i).getName());
 	}
 
+	/**
+	 * Recover the detail of one computer 
+	 * @param id
+	 */
 	public void details(Long id) {
 		ComputerDTO computer = computerTarget.path("/" + id)
 				.request(MediaType.APPLICATION_JSON)
@@ -52,6 +63,10 @@ public class ComputerCli {
 		System.out.println(computer.toString());
 	}
 
+	/**
+	 * Create one computer 
+	 * @param Computer
+	 */
 	public void create(Computer computer) {
 
 		Response response = computerTarget.path("/create")
@@ -62,6 +77,10 @@ public class ComputerCli {
 		}
 	}
 
+	/**
+	 * Update one computer 
+	 * @param Computer
+	 */
 	public void update(Computer computer) {
 		Response response = computerTarget.path("/update")
 				.request(MediaType.APPLICATION_JSON)
@@ -71,6 +90,10 @@ public class ComputerCli {
 		}
 	}
 
+	/**
+	 * Delete one computer
+	 * @param id
+	 */
 	public void delete(Long id){
 		Response response = computerTarget.path("/"+id)
 				.request(MediaType.APPLICATION_JSON)

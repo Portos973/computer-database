@@ -105,19 +105,10 @@ public class ServiceComputer implements IServiceComputer {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void create(Computer computer) {
 
-		if (!validate.checkCompanyId(computer.getCompany().getId())) {
 
-			computerDAO.create(null, computer.getName(),
-					computer.getIntroduced(), computer.getDiscontinued());
+			computerDAO.create(computer);
 			System.out.println("\n");
 
-		} else {
-			computerDAO.create(computer.getCompany().getId(),
-					computer.getName(), computer.getIntroduced(),
-					computer.getDiscontinued());
-			System.out.println("\n");
-
-		}
 	}
 
 	/*
@@ -166,7 +157,7 @@ public class ServiceComputer implements IServiceComputer {
 	public List<ComputerDTO> pages(Pages page) {
 
 		computers = computerDAO.pages(page.getLimit(), page.getOffset(),
-				page.getSearch());
+				page.getSearch(), page.getOrder(), page.getSort());
 
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
 
@@ -222,11 +213,11 @@ public class ServiceComputer implements IServiceComputer {
 
 			} else {
 				return new ComputerDTO(computer.getId(), computer.getName(),
-						introduced, discontinued, 0, "");
+						introduced, discontinued, 0, null);
 			}
 		} else {
 			return new ComputerDTO(computer.getId(), computer.getName(),
-					introduced, discontinued, 0, "");
+					introduced, discontinued, 0, null);
 		}
 	}
 

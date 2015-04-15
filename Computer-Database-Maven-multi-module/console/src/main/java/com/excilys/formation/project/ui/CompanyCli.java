@@ -24,12 +24,19 @@ public class CompanyCli {
 	Client client;
 	WebTarget computerTarget;
 	
+	/**
+	 * Constructor which initialize the instance variable:
+	 * one client and webTarget
+	 */
 	private CompanyCli(){
 		client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		computerTarget = client.target("http://localhost:8080/webservice/rest/companies/");
 				
 	}
 	
+	/**
+	 * Recover a list of computers
+	 */
 	public void companies(){
 		List<Company> companies = computerTarget.path("/all").request(MediaType.APPLICATION_JSON).get(new GenericType<List<Company>>() {});
 		System.out.println("\n /** List of companies **/");

@@ -1,6 +1,6 @@
 /**
  * @author Anderson F.
- * Description: Class Computer corresponding to Computer table  
+ * Description: Class Computer correspond to Computer table  
  * */
 
 package com.excilys.formation.project.models;

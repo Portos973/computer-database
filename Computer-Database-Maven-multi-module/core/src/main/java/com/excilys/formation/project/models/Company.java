@@ -1,6 +1,6 @@
 /**
  * @author Anderson F.
- * Description: Class Company corresponding to Company table  
+ * Description: Class Company correspond to Company table  
  * */
 
 package com.excilys.formation.project.models;

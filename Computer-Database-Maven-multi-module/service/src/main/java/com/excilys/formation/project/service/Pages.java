@@ -4,7 +4,7 @@ package com.excilys.formation.project.service;
 import java.util.List;
 
 import com.excilys.formation.project.models.Computer;
-import com.excilys.formation.project.persistence.ComputerDAO;
+import com.excilys.formation.project.persistence.impl.ComputerDAO;
 
 
 public class Pages {
@@ -36,7 +36,7 @@ public class Pages {
 
 	public List<Computer> next() {
 		List<Computer> computers = null;
-		computers = computerDAO.pages(limit, offset, search);
+		computers = computerDAO.pages(limit, offset, search, sort, order);
 
 		return computers;
 	}

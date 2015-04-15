@@ -3,7 +3,7 @@
  * Description: Class CompanyDAO allows to handle computer table  
  * */
 
-package com.excilys.formation.project.persistence;
+package com.excilys.formation.project.persistence.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -16,8 +16,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.project.models.Computer;
+import com.excilys.formation.project.persistence.*;
 
 @Repository
 public class ComputerDAO implements IComputerDAO {
@@ -44,13 +46,14 @@ public class ComputerDAO implements IComputerDAO {
 	 * com.excilys.formation.project.persistence.ComputerInterface#computers()
 	 */
 
-	private ComputerDAO() {
+	public ComputerDAO() {
 	}
 
 	@Override
+	@Transactional
 	public List<Computer> computers() {
 	
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session.createQuery("from Computer order by name ");
 		List<Computer> computers = query.list();
 		return computers;
@@ -66,8 +69,9 @@ public class ComputerDAO implements IComputerDAO {
 	 * .lang.Long)
 	 */
 	@Override
+	@Transactional
 	public Computer details(Long id) {
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session.createQuery("SELECT cmp FROM Computer cmp left outer join cmp.company as company where cmp.id= :id");
 		
 		query.setLong("id", id);
@@ -88,18 +92,11 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
-	public void create(Long cid, String name, Date date, Date date2) {
+	@Transactional
+	public void create(Computer computer) {
 
-		String query = "INSERT INTO computer set company_id= ?, name=?, introduced=?, discontinued=?";
-		
-
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		if (cid != null)
-
-			jdbcTemplate.update(query, new Object[] { cid, name, date, date2 });
-		else
-			jdbcTemplate.update(query, new Object[] { null, name, date, date2 });
-
+		Session session = factory.getCurrentSession();
+		session.save(computer);
 	}
 
 	// mettre à jour les champs d'un ordinateur de la table computer
@@ -113,6 +110,7 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
+	//@Transactional
 	public void update(Long id, Long cid, String name, Date date, Date date2) {
 		String query = null;
 
@@ -135,11 +133,12 @@ public class ComputerDAO implements IComputerDAO {
 	 * .lang.Long, java.sql.Connection)
 	 */
 	@Override
+	@Transactional
 	public void delete(Long id) {
 
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session
-				.createQuery("delete Computer where where id = :id");
+				.createQuery("delete Computer where id = :id");
 		query.setParameter("id", id);
 
 		query.executeUpdate();
@@ -156,17 +155,18 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
-	public List<Computer> pages(int limit, int offset, String search) {
-		Session session = factory.openSession();
+	@Transactional
+	public List<Computer> pages(int limit, int offset, String search, String sort, String order) {
+		Session session = factory.getCurrentSession();
 		Query query = null;
 
 		if (search == null) {
-			query = session.createQuery("FROM Computer ORDER BY name asc");
+			query = session.createQuery("FROM Computer ORDER BY "+order+" "+sort);
 			query.setFirstResult(offset);
 			query.setMaxResults(limit);
 
 		} else {
-			query = session.createQuery("FROM Computer WHERE name LIKE :search ORDER BY name asc ");
+			query = session.createQuery("FROM Computer WHERE name LIKE :search ORDER BY "+order+" "+sort);
 			query.setFirstResult(offset);
 			query.setMaxResults(limit);
 			query.setParameter("search", search+"%");
@@ -189,8 +189,9 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
+	@Transactional
 	public Long count(String search) {
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = null;
 
 		Long count;
@@ -217,10 +218,11 @@ public class ComputerDAO implements IComputerDAO {
 	 */
 
 	@Override
+	@Transactional
 	public List<Long> findByCompanyId(Long id) {
 
 		
-		Session session = factory.openSession();
+		Session session = factory.getCurrentSession();
 		Query query = session.createQuery("Select C.id from Computer C where company_id= :id ");
 		query.setParameter("id", id);
 		

@@ -1,4 +1,4 @@
-package com.excilys.formation.project.persistence;
+package com.excilys.formation.project.persistence.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

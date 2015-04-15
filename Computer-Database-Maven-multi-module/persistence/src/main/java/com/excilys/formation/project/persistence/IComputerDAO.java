@@ -1,7 +1,11 @@
+/**
+ * @author Anderson F.
+ * Description: ComputerDAO Interface
+ */
+
+
 package com.excilys.formation.project.persistence;
 
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,15 +13,22 @@ import com.excilys.formation.project.models.Computer;
 
 public interface IComputerDAO {
 
-	// method computers: list of computer
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#computers()
 	 */
+	/**
+	 * Recover list of computers
+	 * @return List<Computer>
+	 */
 	public abstract List<Computer> computers();
 
-	// Details of computer with his ID
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#details(java.lang.Long)
+	 */
+	/**
+	 * Detail of a computer
+	 * @param id
+	 * @return Computer
 	 */
 	public abstract Computer details(Long id);
 
@@ -25,11 +36,26 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#create(java.lang.Long, java.lang.String, java.util.Date, java.util.Date)
 	 */
-	public abstract void create(Long cid, String name, Date date, Date date2);
+	/**
+	 * Create a computer
+	 * @param cid
+	 * @param name
+	 * @param date
+	 * @param date2
+	 */
+	public abstract void create(Computer computer);
 
 	// mettre à jour les champs d'un ordinateur de la table computer
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#update(java.lang.Long, java.lang.Long, java.lang.String, java.util.Date, java.util.Date)
+	 */
+	/**
+	 * Update a computer
+	 * @param id
+	 * @param cid
+	 * @param name
+	 * @param date
+	 * @param date2
 	 */
 	public abstract void update(Long id, Long cid, String name, Date date,
 			Date date2);
@@ -38,29 +64,46 @@ public interface IComputerDAO {
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#delete(java.lang.Long, java.sql.Connection)
 	 */
-	public abstract void delete(Long id);
-
-	// Method of search
-	/* (non-Javadoc)
-	 * @see com.excilys.formation.project.persistence.ComputerInterface#search(java.lang.String)
+	/**
+	 * Delete a computer
+	 * @param id
 	 */
-	//public abstract List<Computer> search(String name, Connection connection);
+	public abstract void delete(Long id);
 
 	// Select with limit and offset
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#pages(int, int, java.lang.String)
 	 */
-	public abstract List<Computer> pages(int limit, int offset, String search);
+	/**
+	 * Pagination with search
+	 * @param limit
+	 * @param offset
+	 * @param search
+	 * @param string2 
+	 * @param string 
+	 * @return List<Computer>
+	 */
+	public abstract List<Computer> pages(int limit, int offset, String search, String string, String string2);
 
 	// number of elements
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#count(java.lang.String)
+	 */
+	/**
+	 * Count the number of computer
+	 * @param search
+	 * @return Long
 	 */
 	public abstract Long count(String search);
 
 	// find computer's id by company's id
 	/* (non-Javadoc)
 	 * @see com.excilys.formation.project.persistence.ComputerInterface#findByCompanyId(java.lang.Long, java.sql.Connection)
+	 */
+	/**
+	 * Return list of CompanyID
+	 * @param id
+	 * @return List<Long> 
 	 */
 	public abstract List<Long> findByCompanyId(Long id);
 

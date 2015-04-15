@@ -40,7 +40,6 @@ public class ServiceComputer implements IServiceComputer {
 	@Autowired
 	private ICompanyDAO companyDAO;
 
-
 	public ServiceComputer() {
 		companies = new ArrayList<Company>();
 		computers = new ArrayList<Computer>();
@@ -86,19 +85,10 @@ public class ServiceComputer implements IServiceComputer {
 	@Override
 	public void create(Computer computer) {
 
-		if (!validate.checkCompanyId(computer.getCompany().getId())) {
+		computerDAO.create(computer);
+		System.out.println("===========> création faite !!!");
 
-			computerDAO.create(null, computer.getName(),
-					computer.getIntroduced(), computer.getDiscontinued());
-			System.out.println("\n");
-
-		} else {
-			computerDAO.create(computer.getCompany().getId(),
-					computer.getName(), computer.getIntroduced(),
-					computer.getDiscontinued());
-			System.out.println("===========> création faite !!!");
-
-		}
+		// }
 	}
 
 	/*
@@ -142,7 +132,7 @@ public class ServiceComputer implements IServiceComputer {
 	public List<ComputerDTO> pages(Pages page) {
 
 		computers = computerDAO.pages(page.getLimit(), page.getOffset(),
-				page.getSearch());
+				page.getSearch(),page.getSort(), page.getOrder());
 
 		List<ComputerDTO> computersDTO = new ArrayList<ComputerDTO>();
 
@@ -161,7 +151,7 @@ public class ServiceComputer implements IServiceComputer {
 	 */
 	@Override
 	public Long count(String search) {
-		Long count ;
+		Long count;
 
 		count = computerDAO.count(search);
 
@@ -231,8 +221,14 @@ public class ServiceComputer implements IServiceComputer {
 		}
 
 		Computer computer = new Computer();
-		computer.setCompany(new Company(dto.getCompanyName(), dto
-				.getCompanyId()));
+		
+		if (dto.getCompanyId() == 0) {
+			computer.setCompany(null);
+		} else {
+			computer.setCompany(new Company(dto.getCompanyName(), dto
+					.getCompanyId()));
+		}
+		
 		computer.setId(dto.getId());
 		computer.setName(dto.getName());
 		computer.setIntroduced(introduced);

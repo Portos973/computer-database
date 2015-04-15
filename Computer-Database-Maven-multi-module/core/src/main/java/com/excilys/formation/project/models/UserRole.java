@@ -1,3 +1,8 @@
+/**
+ * @author Anderson F.
+ * Description: Class UserRole correspond to UserRole table  
+ * */
+
 package com.excilys.formation.project.models;
 
 import static javax.persistence.GenerationType.IDENTITY;

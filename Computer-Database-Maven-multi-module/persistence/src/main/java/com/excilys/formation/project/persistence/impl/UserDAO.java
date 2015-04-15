@@ -1,4 +1,4 @@
-package com.excilys.formation.project.persistence;
+package com.excilys.formation.project.persistence.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.project.models.User;
+import com.excilys.formation.project.persistence.*;
 
 @Repository
 public class UserDAO implements IUserDAO{

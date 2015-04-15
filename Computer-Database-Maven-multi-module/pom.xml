@@ -170,8 +170,6 @@
 				<artifactId>commons-logging</artifactId>
 				<version>${logging}</version>
 			</dependency>
-
-
 		</dependencies>
 
 	</dependencyManagement>
@@ -190,6 +188,7 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${logback}</version>
 		</dependency>
+
 
 	</dependencies>
 
