@@ -16,18 +16,20 @@
 				<form id="searchForm" action="dashboard" method="GET"
 					class="form-inline">
 					<input type="search" id="searchbox" name="search"
-						class="form-control" placeholder="<spring:message code="dashboard.search.name"></spring:message>" /> <input
-						type="submit" id="searchsubmit"
+						class="form-control"
+						placeholder="<spring:message code="dashboard.search.name"></spring:message>" />
+					<input type="submit" id="searchsubmit"
 						value="<spring:message code="dashboard.search"></spring:message>"
 						class="btn btn-primary" />
 				</form>
 			</div>
 			<div class="pull-right">
 				<sec:authorize ifAnyGranted="ROLE_ADMIN">
-					<a class="btn btn-success" id="addComputer" href=addComputer><spring:message code="dashboard.add"></spring:message></a>
+					<a class="btn btn-success" id="addComputer" href=addComputer><spring:message
+							code="dashboard.add"></spring:message></a>
 					<a class="btn btn-default" id="editComputer" href="#"
 						onclick="$.fn.toggleEditMode();"><spring:message
-							code="dashboard.edit"></spring:message></a>
+							code="dashboard.button.edit"></spring:message></a>
 				</sec:authorize>
 			</div>
 		</div>
@@ -52,27 +54,31 @@
 						</a>
 					</span></th>
 					<th><spring:message code="dashboard.name"></spring:message> <a
-						href="dashboard?order=name&search=${search}&sort=ASC"><i
+						href="dashboard?limit=${limit}&index=${index}&order=name&search=${search}&sort=ASC"><i
 							class="fa fa-angle-up"></i></a> <a
-						href="dashboard?order=name&search=${search}&sort=DESC"><i
+						href="dashboard?limit=${limit}&index=${index}&order=name&search=${search}&sort=DESC"><i
 							class="fa fa-angle-down"></i></a></th>
 					<th><spring:message code="dashboard.introduced"></spring:message>
-						<a href="dashboard?order=introduced&search=${search}&sort=ASC"><i
+						<a
+						href="dashboard?limit=${limit}&index=${index}&order=introduced&search=${search}&sort=ASC"><i
 							class="fa fa-angle-up"></i></a> <a
-						href="dashboard?order=introduced&search=${search}&sort=DESC"><i
+						href="dashboard?limit=${limit}&index=${index}&order=introduced&search=${search}&sort=DESC"><i
 							class="fa fa-angle-down"></i></a></th>
 					<!-- Table header for Discontinued Date -->
 					<th><spring:message code="dashboard.discontinued"></spring:message>
-						<a href="dashboard?order=discontinued&search=${search}&sort=ASC">
+						<a
+						href="dashboard?limit=${limit}&index=${index}&order=discontinued&search=${search}&sort=ASC">
 							<i class="fa fa-angle-up"></i>
-					</a> <a href="dashboard?order=disocntinued&search=${search}&sort=DESC">
+					</a> <a
+						href="dashboard?limit=${limit}&index=${index}&order=discontinued&search=${search}&sort=DESC">
 							<i class="fa fa-angle-down"></i>
 					</a></th>
 					<!-- Table header for Company -->
 					<th><spring:message code="dashboard.company"></spring:message>
-						<a href="dashboard?order=company&search=${search}&sort=ASC"><i
+						<a
+						href="dashboard?limit=${limit}&index=${index}&order=company&search=${search}&sort=ASC"><i
 							class="fa fa-angle-up"></i></a> <a
-						href="dashboard?order=company&search=${search}&sort=DESC"><i
+						href="dashboard?limit=${limit}&index=${index}&order=company&search=${search}&sort=DESC"><i
 							class="fa fa-angle-down"></i></a></th>
 
 				</tr>
@@ -85,9 +91,11 @@
 					<tr>
 						<td class="editMode"><input type="checkbox" name="cb"
 							class="cb" value="${Computer.id }"></td>
-						<td><a
-							href="editComputer?id=${Computer.id }&&computerName=${Computer.name}&&introduced=${Computer.introduced }&&discontinued=${Computer.discontinued }"
-							onclick="">${Computer.name}</a></td>
+						<td><sec:authorize ifAnyGranted="ROLE_ADMIN">
+								<a
+									href="editComputer?id=${Computer.id }&&computerName=${Computer.name}&&introduced=${Computer.introduced }&&discontinued=${Computer.discontinued }"
+									onclick="">${Computer.name}</a>
+							</sec:authorize></td>
 						<td>${Computer.introduced }</td>
 						<td>${Computer.discontinued }</td>
 						<td>${Computer.companyName }</td>
@@ -100,38 +108,14 @@
 	</div>
 </section>
 
-<footer class="navbar-fixed-bottom">
-	<div class="container text-center">
-		<ul class="pagination">
-			<li><a href="./dashboard?index=${index-1}&&limit=${limit}"
-				aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-			</a></li>
+<%@include file="footer.jsp"%>
 
-			<c:forEach var="index" begin="1" end="${nbPages}">
-				<li><a href="./dashboard?index=${index}&&limit=${limit}">${index}</a></li>
-			</c:forEach>
-
-			<li><a href="./dashboard?index=${index+1}&&limit=${limit}"
-				aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-			</a></li>
-		</ul>
-
-
-		<div class="btn-group btn-group-sm pull-right" role="group">
-			<form action="dashboard?index=${index}" method="get">
-				<input type="submit" id="10" name="limit" value="10"
-					class="btn btn-default"> <input type="submit" id="50"
-					name="limit" value="50" class="btn btn-default"> <input
-					type="submit" id="100" name="limit" value="100"
-					class="btn btn-default">
-			</form>
-		</div>
-	</div>
-</footer>
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/dashboard.js"></script>
-
+<script type="text/javascript">
+	var strings = new Array();
+	strings['dashboard.button.view'] = "<spring:message code='dashboard.button.view' javaScriptEscape='true' />";
+	strings['dashboard.button.edit'] = "<spring:message code='dashboard.button.edit' javaScriptEscape='true' />";
+	strings['dashboard.confirm.delete'] = "<spring:message code='dashboard.confirm.delete' javaScriptEscape='true' />";
+</script>
 
 </body>
 </html>

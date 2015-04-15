@@ -19,7 +19,7 @@
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<a class="navbar-brand" href="dashboard"> Application - Computer
-				Database </a> <span style="float: right"> <a href="?lang=	en"><img
+				Database </a> <span style="float: right"> <a href="?lang=en"><img
 					src="images/en_flag.png"></a> | <a href="?lang=fr"><img
 					src="images/fr_flag.png"></a>
 			</span>
@@ -32,7 +32,6 @@
 
 	<p style="float: left; color: #CCC;">
 		<c:if test="${pageContext.request.userPrincipal.name != null}">
-                   Welcome : ${pageContext.request.userPrincipal.name} |
+                   Welcome : ${pageContext.request.userPrincipal.name} 
                 </c:if>
-		<a href="<c:url value="/j_spring_security_logout" />"> Logout</a>
 	</p>

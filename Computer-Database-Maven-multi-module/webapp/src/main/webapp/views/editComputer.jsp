@@ -5,7 +5,7 @@
 		<div class="row">
 			<div class="col-xs-8 col-xs-offset-2 box">
 				<div class="label label-default pull-right">id:${id}</div>
-				<h1>Edit Computer</h1>
+				<h1><spring:message code="edit"></spring:message></h1>
 
 				<form action="editComputer" method="POST">
 					<input type="hidden" value="${id}" name="id" />
@@ -38,8 +38,8 @@
 						</div>
 					</fieldset>
 					<div class="actions pull-right">
-						<input type="submit" value="Edit" class="btn btn-primary">
-						or <a href="./dashboard" class="btn btn-default">Cancel</a>
+						<input type="submit" value="<spring:message code="edit.edit"></spring:message>" class="btn btn-primary">
+						or <a href="./dashboard" class="btn btn-default"><spring:message code="edit.cancel"></spring:message></a>
 					</div>
 				</form>
 			</div>

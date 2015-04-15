@@ -19,21 +19,13 @@ $.validator.addMethod(
     
         // Specify the validation rules
         rules: {
-        	computerName: "required",
-            introduced: {
-                required: true,
-                formatDate:true
-            },
+        	name: "required",
             agree: "required"
         },
         
         // Specify the validation error messages
         messages: {
-        	computerName: "Please enter one name for this computer",
-            introduced: {
-                required: "Please provide a indroduced date",
-                minlength: "Please respect format date yyyy/mm/dd"
-            },
+        	name: "Please enter one name for this computer",
             agree: "Please accept our policy"
         },
         
